@@ -106,6 +106,7 @@
     <ClCompile Include="GraphicsCore.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Picking.cpp" />
+    <ClCompile Include="ScriptingCore\ScriptingEngine\Debugger\Debug.cpp" />
     <ClCompile Include="UI.cpp" />
     <ClCompile Include="UICore.cpp" />
     <ClCompile Include="UIManager.cpp" />
@@ -142,7 +143,6 @@
     <ClCompile Include="DDStaticMesh.cpp" />
     <ClCompile Include="ScriptingCore\ScriptingCore.cpp" />
     <ClCompile Include="ScriptingCore\ScriptingEngine\ScriptingEngine.cpp" />
-    <ClCompile Include="ScriptingCore\ScriptingEngine\Debug\Debug.cpp" />
     <ClCompile Include="ScriptingCore\ScriptingEngine\EventManager\EventManager.cpp" />
     <ClCompile Include="ScriptingCore\ScriptingEngine\FunctionManager\FunctionManager.cpp" />
     <ClCompile Include="ScriptingCore\ScriptingEngine\NodeFactory\NodeFactory.cpp" />
@@ -161,6 +161,7 @@
     <ClInclude Include="GraphicsCore.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Picking.h" />
+    <ClInclude Include="ScriptingCore\ScriptingEngine\Debugger\Debug.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="UICore.h" />
     <ClInclude Include="UIManager.h" />
@@ -175,7 +176,6 @@
     <ClInclude Include="ScriptingCore\ScriptMessages.h" />
     <ClInclude Include="ScriptingCore\ScriptingEngine\ScriptingEngine.h" />
     <ClInclude Include="ScriptingCore\ScriptingEngine\ScriptUtil.h" />
-    <ClInclude Include="ScriptingCore\ScriptingEngine\Debug\Debug.h" />
     <ClInclude Include="ScriptingCore\ScriptingEngine\EventManager\EventManager.h" />
     <ClInclude Include="ScriptingCore\ScriptingEngine\FunctionManager\FunctionManager.h" />
     <ClInclude Include="ScriptingCore\ScriptingEngine\NodeFactory\NodeFactory.h" />

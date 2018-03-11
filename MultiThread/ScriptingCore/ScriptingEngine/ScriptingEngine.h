@@ -13,7 +13,7 @@ using std::endl;
 #include "VariableManager\\VariableManager.h"
 #include "ObjectManager\\ObjectManager.h"
 #include "ScriptUtil.h"
-#include "Debug\\Debug.h"
+#include "Debugger\\Debug.h"
 
 class CScriptingEngine{
 
