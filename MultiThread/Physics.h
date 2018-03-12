@@ -49,8 +49,8 @@ public:
 	bool isKinematic(int id);
 	void setAsKinematic(int id);
 
-	btVector3 getPosition(int id);//D3DXVECTOR3 getPosition(int id);
-	void setPosition(int id, btVector3& position);//void setPosition(int id, D3DXVECTOR3& position);
+	D3DXVECTOR3 getPosition(int id);
+	void setPosition(int id, D3DXVECTOR3& position);
 
 	btVector3 getLinearVelocity(int id);//D3DXVECTOR3 getLinearVelocity(int id);
 	void setLinearVelocity(int id, btVector3& vel);//void setLinearVelocity(int id, D3DXVECTOR3& vel);

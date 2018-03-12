@@ -158,7 +158,7 @@ void EntityCore::EntityMgrMsg()
 				EntityData temp;
 				m_EntityMgr.GetItem(msgx->ID, temp);
 				if(temp.PhysicsID > -1)
-					m_Physics.setPosition(temp.PhysicsID, m_Physics.convertToBtVec(msgx->Position));
+					m_Physics.setPosition(temp.PhysicsID, msgx->Position);
 				delete msg;
 				break;
 			}
@@ -336,7 +336,7 @@ void EntityCore::PollPhysics()
 		{
 			btVector3 temp;
 			D3DXVECTOR3 newtemp;
-			newtemp = m_Physics.convertToDxVec(m_Physics.getPosition(vEntity[i].second.PhysicsID));
+			newtemp = m_Physics.getPosition(vEntity[i].second.PhysicsID);
 			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_POSITION, newtemp);
 			newtemp = m_Physics.convertToDxVec(m_Physics.getLinearVelocity(vEntity[i].second.PhysicsID));
 			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_VELOCITY, newtemp);

@@ -288,9 +288,9 @@ void PhysicsWorld::setAsKinematic(int id)
 
 
 
-btVector3 PhysicsWorld::getPosition(int id)
+D3DXVECTOR3 PhysicsWorld::getPosition(int id)
 {
-	btVector3 pos;
+	D3DXVECTOR3 pos;
 
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
@@ -299,27 +299,27 @@ btVector3 PhysicsWorld::getPosition(int id)
 		btTransform trans;
 		body->getMotionState()->getWorldTransform(trans);
 
-		pos = btVector3(float(trans.getOrigin().getX()),
-			float(trans.getOrigin().getY()), float(trans.getOrigin().getZ()));
+		pos = convertToDxVec(trans.getOrigin());
 	}
 	return pos;
 
 }
 
-void PhysicsWorld::setPosition(int id, btVector3& position)
+void PhysicsWorld::setPosition(int id, D3DXVECTOR3& position)
 {
+	btVector3 btPosition = convertToBtVec(position);
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
 	if (body && body->getMotionState())
 	{
 		btTransform trans;
 		body->getMotionState()->getWorldTransform(trans);
-		trans.setOrigin(position);
+		trans.setOrigin(btPosition);
 		body->getMotionState()->setWorldTransform(trans);
 	}
 	else// I dont think we will be useing this..but might as well have it just in case.
 	{
-		dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setOrigin(position);
+		dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setOrigin(btPosition);
 	}
 }
 
