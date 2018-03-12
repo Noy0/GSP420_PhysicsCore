@@ -55,7 +55,7 @@ PhysicsWorld::~PhysicsWorld()
 
 
 
-void PhysicsWorld::CreateWorld(WorldInfo& WldInfo)
+void PhysicsWorld::createWorld(WorldInfo& WldInfo)
 {
 	///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
 	collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -83,7 +83,7 @@ void PhysicsWorld::CreateWorld(WorldInfo& WldInfo)
 	btAlignedObjectArray<btCollisionShape*> collisionShapes;
 }
 
-void PhysicsWorld::wipePhysics()
+void PhysicsWorld::clearPhysics()
 {
 	for (int i = 7; i <= dynamicsWorld->getNumCollisionObjects() - 1; i++)
 	{
@@ -103,7 +103,7 @@ void PhysicsWorld::wipePhysics()
 
 
 
-void PhysicsWorld::UpdateWorld(btScalar timeStep, int maxSubSteps)
+void PhysicsWorld::updateWorld(btScalar timeStep, int maxSubSteps)
 {
 	dynamicsWorld->stepSimulation(timeStep, maxSubSteps);
 }
@@ -139,7 +139,7 @@ void PhysicsWorld::displayCallback()
 
 
 
-int PhysicsWorld::CreateCollisionBox(BoxInfo& info)
+int PhysicsWorld::createCollision_Box(BoxInfo& info)
 {
 	// Creates a Box Object.
 
@@ -177,7 +177,7 @@ int PhysicsWorld::CreateCollisionBox(BoxInfo& info)
 
 }
 
-int PhysicsWorld::CreateCollisionSphere(SphereInfo& info)
+int PhysicsWorld::createCollision_Sphere(SphereInfo& info)
 {
 	//create a dynamic rigidbody Sphere
 
@@ -215,7 +215,7 @@ int PhysicsWorld::CreateCollisionSphere(SphereInfo& info)
 	return mNumOfObjects;
 }
 
-int PhysicsWorld::CreateCollisionCylinder(BoxInfo& info)
+int PhysicsWorld::createCollision_Cylinder(BoxInfo& info)
 {
 	// Creates a Box Object.
 
@@ -256,7 +256,7 @@ int PhysicsWorld::CreateCollisionCylinder(BoxInfo& info)
 
 
 
-void PhysicsWorld::DeletePhysicsObject(int id)
+void PhysicsWorld::deletePhysicsObject(int id)
 {
 	/// works like a deque...remove one and they push forward...i think
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
@@ -266,7 +266,7 @@ void PhysicsWorld::DeletePhysicsObject(int id)
 
 
 
-bool PhysicsWorld::IsKinematic(int id)
+bool PhysicsWorld::isKinematic(int id)
 {
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
@@ -274,7 +274,7 @@ bool PhysicsWorld::IsKinematic(int id)
 	return body->isKinematicObject();
 }
 
-void PhysicsWorld::SetAsKinematic(int id)
+void PhysicsWorld::setAsKinematic(int id)
 {
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
@@ -288,7 +288,7 @@ void PhysicsWorld::SetAsKinematic(int id)
 
 
 
-btVector3 PhysicsWorld::GetShapePosition(int id)
+btVector3 PhysicsWorld::getPosition(int id)
 {
 	btVector3 pos;
 
@@ -306,7 +306,7 @@ btVector3 PhysicsWorld::GetShapePosition(int id)
 
 }
 
-void PhysicsWorld::SetShapePosition(int id, btVector3& position)
+void PhysicsWorld::setPosition(int id, btVector3& position)
 {
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
@@ -326,7 +326,7 @@ void PhysicsWorld::SetShapePosition(int id, btVector3& position)
 
 
 
-btVector3 PhysicsWorld::GetLinearVelocity(int id)
+btVector3 PhysicsWorld::getLinearVelocity(int id)
 {
 	btVector3 vec(0, 0, 0);
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
@@ -338,7 +338,7 @@ btVector3 PhysicsWorld::GetLinearVelocity(int id)
 	return vec;
 }
 
-void PhysicsWorld::SetLinearVelocity(int id, btVector3& vel)
+void PhysicsWorld::setLinearVelocity(int id, btVector3& vel)
 {
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
@@ -351,7 +351,7 @@ void PhysicsWorld::SetLinearVelocity(int id, btVector3& vel)
 
 
 
-void PhysicsWorld::ApplyCentralForce(int id, btVector3& force)
+void PhysicsWorld::applyCentralForce(int id, btVector3& force)
 {
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
@@ -364,7 +364,7 @@ void PhysicsWorld::ApplyCentralForce(int id, btVector3& force)
 
 
 
-btVector3 PhysicsWorld::GetShapeRotation(int id)
+btVector3 PhysicsWorld::getRotation(int id)
 {
 	btVector3 rot;
 
@@ -383,7 +383,7 @@ btVector3 PhysicsWorld::GetShapeRotation(int id)
 	return rot;
 }
 
-void PhysicsWorld::SetShapeRotation(int id, btVector3& axis, float degree)
+void PhysicsWorld::setRotation(int id, btVector3& axis, float degree)
 {
 	degree = (3.14159265 / 180)*degree;
 	btQuaternion rot(btVector3(axis.getX(), axis.getY(), axis.getZ()), degree);
@@ -402,7 +402,7 @@ void PhysicsWorld::SetShapeRotation(int id, btVector3& axis, float degree)
 	}
 }
 
-void PhysicsWorld::SetShapeRotation(int id, btQuaternion& quat)
+void PhysicsWorld::setRotation(int id, btQuaternion& quat)
 {
 
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
@@ -420,10 +420,10 @@ void PhysicsWorld::SetShapeRotation(int id, btQuaternion& quat)
 	}
 }
 
-void PhysicsWorld::RotateShapeOnX(int id, float degree)
+void PhysicsWorld::rotateOnX(int id, float degree)
 {
 	btVector3 vec;
-	vec = GetShapeRotation(id);
+	vec = getRotation(id);
 	btQuaternion q1(vec.getX(), vec.getY(), vec.getZ(), vec.w());
 
 	vec.setValue(-20, 0, 0);
@@ -431,13 +431,13 @@ void PhysicsWorld::RotateShapeOnX(int id, float degree)
 	btQuaternion q3;
 	q3 = q2*q1;
 
-	SetShapeRotation(id, q3);
+	setRotation(id, q3);
 }
 
-void PhysicsWorld::RotateShapeOnY(int id, float degree)
+void PhysicsWorld::rotateOnY(int id, float degree)
 {
 	btVector3 vec;
-	vec = GetShapeRotation(id);
+	vec = getRotation(id);
 	btQuaternion q1(vec.getX(), vec.getY(), vec.getZ(), vec.w());
 
 	vec.setValue(0, -20, 0);
@@ -445,13 +445,13 @@ void PhysicsWorld::RotateShapeOnY(int id, float degree)
 	btQuaternion q3;
 	q3 = q2*q1;
 
-	SetShapeRotation(id, q3);
+	setRotation(id, q3);
 }
 
-void PhysicsWorld::RotateShapeOnZ(int id, float degree)
+void PhysicsWorld::rotateOnZ(int id, float degree)
 {
 	btVector3 vec;
-	vec = GetShapeRotation(id);
+	vec = getRotation(id);
 	btQuaternion q1(vec.getX(), vec.getY(), vec.getZ(), vec.w());
 
 	vec.setValue(0, 0, -20);
@@ -459,13 +459,13 @@ void PhysicsWorld::RotateShapeOnZ(int id, float degree)
 	btQuaternion q3;
 	q3 = q2*q1;
 
-	SetShapeRotation(id, q3);
+	setRotation(id, q3);
 }
 
 
 
 
-btVector3 PhysicsWorld::ConvertToBtVec(D3DXVECTOR3& old)
+btVector3 PhysicsWorld::convertToBtVec(D3DXVECTOR3& old)
 {
 	btVector3 newVec;
 	newVec.setValue(old.x, old.y, old.z);
@@ -488,7 +488,7 @@ D3DXVECTOR3 PhysicsWorld::convertToDxVec(btVector3& old)
 
 
 
-D3DXQUATERNION PhysicsWorld::ConvertToDxRot(btVector3 &oldRot)
+D3DXQUATERNION PhysicsWorld::convertToDxRot(btVector3 &oldRot)
 {
 	D3DXQUATERNION tempQuat(oldRot.x(),oldRot.y(),oldRot.z(),oldRot.w());
 

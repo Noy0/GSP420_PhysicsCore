@@ -31,44 +31,44 @@ public:
 	PhysicsWorld();
 	~PhysicsWorld();
 
-	void CreateWorld(WorldInfo& WldInfo);
-	void wipePhysics();
+	void createWorld(WorldInfo& WldInfo);
+	void clearPhysics();
 
-	void UpdateWorld(btScalar timeStep = (1 / 60), int maxSubSteps = 1);
+	void updateWorld(btScalar timeStep = (1 / 60), int maxSubSteps = 1);
 
 	void displayCallback();
 
-	//int CreateCollision_Plane(PMatPlane& mat);
-	int CreateCollisionBox(BoxInfo& info);//int CreateCollisionBox(PMatBox& mat);
-	int CreateCollisionSphere(SphereInfo& info);//int CreateCollisionSphere(PMatSphere& mat);
-	//int CreateCollision_Capsule(BoxInfo& info);
-	int PhysicsWorld::CreateCollisionCylinder(BoxInfo& info);//int CreateCollisionCylinder(PMatCylinder& mat);
+	//int createCollision_Plane(PMatPlane& mat);
+	int createCollision_Box(BoxInfo& info);//int createCollision_Box(PMatBox& mat);
+	int createCollision_Sphere(SphereInfo& info);//int createCollision_Sphere(PMatSphere& mat);
+	//int createCollision_Capsule(BoxInfo& info);
+	int createCollision_Cylinder(BoxInfo& info);//int createCollision_Cylinder(PMatCylinder& mat);
 
-	void PhysicsWorld::DeletePhysicsObject(int id);
+	void deletePhysicsObject(int id);
 
-	bool IsKinematic(int id);
-	void SetAsKinematic(int id);
+	bool isKinematic(int id);
+	void setAsKinematic(int id);
 
-	btVector3 GetShapePosition(int id);//D3DXVECTOR3 GetPosition(int id);
-	void SetShapePosition(int id, btVector3& position);//void SetPosition(int id, D3DXVECTOR3& position);
+	btVector3 getPosition(int id);//D3DXVECTOR3 getPosition(int id);
+	void setPosition(int id, btVector3& position);//void setPosition(int id, D3DXVECTOR3& position);
 
-	btVector3 GetLinearVelocity(int id);//D3DXVECTOR3 GetLinearVelocity(int id);
-	void SetLinearVelocity(int id, btVector3& vel);//void SetLinearVelocity(int id, D3DXVECTOR3& vel);
+	btVector3 getLinearVelocity(int id);//D3DXVECTOR3 getLinearVelocity(int id);
+	void setLinearVelocity(int id, btVector3& vel);//void setLinearVelocity(int id, D3DXVECTOR3& vel);
 
-	void ApplyCentralForce(int id, btVector3& force);//void ApplyCentralForce(int id, D3DXVECTOR3& force);
+	void applyCentralForce(int id, btVector3& force);//void applyCentralForce(int id, D3DXVECTOR3& force);
 	
-	btVector3 GetShapeRotation(int id);//D3DXQUATERNION GetRotation(int id);
-	void SetShapeRotation(int id,btQuaternion& quat );//void SetRotation(int id, D3DXQUATERNION& quat);
-	void SetShapeRotation(int id, btVector3& axis,float degree);//void SetRotation_Simple(int id, D3DXVECTOR3& axis, float degree);
-	void RotateShapeOnX(int id, float degree);//void RotateOnCoordAxis(int id, float angle, AxisID axis);
-	void RotateShapeOnY(int id, float degree);
-	void RotateShapeOnZ(int id, float degree);
+	btVector3 getRotation(int id);//D3DXQUATERNION getRotation(int id);
+	void setRotation(int id, btQuaternion& quat );//void setRotation(int id, D3DXQUATERNION& quat);
+	void setRotation(int id, btVector3& axis,float degree);//void setRotation_Simple(int id, D3DXVECTOR3& axis, float degree);
+	void rotateOnX(int id, float degree);//void rotateOnCoordAxis(int id, float angle, AxisID axis);
+	void rotateOnY(int id, float degree);
+	void rotateOnZ(int id, float degree);
 
-	btVector3 ConvertToBtVec(D3DXVECTOR3& old);
+	btVector3 convertToBtVec(D3DXVECTOR3& old);
 	D3DXVECTOR3 convertToDxVec(btVector3& old);
 
-	//btQuaternion ConvertToBtQuat(D3DXQUATERNION& old);
-	D3DXQUATERNION ConvertToDxRot(btVector3& oldRot);
+	//btQuaternion convertToBtQuat(D3DXQUATERNION& old);
+	D3DXQUATERNION convertToDxRot(btVector3& oldRot);
 
 	void setPhysics();
 };

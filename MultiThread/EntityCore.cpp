@@ -14,7 +14,7 @@
 EntityCore::EntityCore()
 {
 	WorldInfo winfo;
-	m_Physics.CreateWorld(winfo);
+	m_Physics.createWorld(winfo);
 }
 
 void EntityCore::Update(float dt)
@@ -22,7 +22,7 @@ void EntityCore::Update(float dt)
 	CopyMessage();
 	EntityMgrMsg();
 	PhysicsMsg();
-	m_Physics.UpdateWorld(dt, 1);
+	m_Physics.updateWorld(dt, 1);
 	PollPhysics();
 	Export();
 }
@@ -67,43 +67,43 @@ void EntityCore::EntityMgrMsg()
 				case BODYTYPE_SPHERE:
 					{
 						SphereInfo info;
-						info.orgin = m_Physics.ConvertToBtVec(msgx->Position);
+						info.orgin = m_Physics.convertToBtVec(msgx->Position);
 						info.friction = newEPD->Friction;
 						info.restitution = newEPD->Restitution;
 						info.mass = newEPD->Mass;
 						info.angularDamping = newEPD->AngularDampen;
 						info.radius = newEPD->Radius;
-						int temp = m_Physics.CreateCollisionSphere(info);
+						int temp = m_Physics.createCollision_Sphere(info);
 						m_EntityMgr.SetValue(msgx->ID, EDTYPE_PHYSICSID, &temp);
 						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
-							m_Physics.SetAsKinematic(temp);
+							m_Physics.setAsKinematic(temp);
 						break;
 					}
 				case BODYTYPE_CYLINDER:
 					{
 						BoxInfo info;
-						info.orgin = m_Physics.ConvertToBtVec(msgx->Position);
+						info.orgin = m_Physics.convertToBtVec(msgx->Position);
 						info.friction = newEPD->Friction;
 						info.restitution = newEPD->Restitution;
 						info.mass = newEPD->Mass;
-						info.halfscale = m_Physics.ConvertToBtVec(newEPD->HalfScale);
-						int temp = m_Physics.CreateCollisionCylinder(info);
+						info.halfscale = m_Physics.convertToBtVec(newEPD->HalfScale);
+						int temp = m_Physics.createCollision_Cylinder(info);
 						m_EntityMgr.SetValue(msgx->ID, EDTYPE_PHYSICSID, &temp);
 						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
-							m_Physics.SetAsKinematic(temp);
+							m_Physics.setAsKinematic(temp);
 					}
 				case BODYTYPE_BOX:
 					{
 						BoxInfo info;
-						info.orgin = m_Physics.ConvertToBtVec(msgx->Position);
+						info.orgin = m_Physics.convertToBtVec(msgx->Position);
 						info.friction = newEPD->Friction;
 						info.restitution = newEPD->Restitution;
 						info.mass = newEPD->Mass;
-						info.halfscale = m_Physics.ConvertToBtVec(newEPD->HalfScale);
-						int temp = m_Physics.CreateCollisionBox(info);
+						info.halfscale = m_Physics.convertToBtVec(newEPD->HalfScale);
+						int temp = m_Physics.createCollision_Box(info);
 						m_EntityMgr.SetValue(msgx->ID, EDTYPE_PHYSICSID,&temp);
 						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
-							m_Physics.SetAsKinematic(temp);
+							m_Physics.setAsKinematic(temp);
 						break;
 					}
 				}
@@ -130,7 +130,7 @@ void EntityCore::EntityMgrMsg()
 				EntityData temp;
 				m_EntityMgr.GetItem(msgx->ID, temp);
 				if(temp.PhysicsID > -1)
-					m_Physics.SetLinearVelocity(temp.PhysicsID, m_Physics.ConvertToBtVec(msgx->Velocity));
+					m_Physics.setLinearVelocity(temp.PhysicsID, m_Physics.convertToBtVec(msgx->Velocity));
 				delete msg;
 				break;
 			}
@@ -158,7 +158,7 @@ void EntityCore::EntityMgrMsg()
 				EntityData temp;
 				m_EntityMgr.GetItem(msgx->ID, temp);
 				if(temp.PhysicsID > -1)
-					m_Physics.SetShapePosition(temp.PhysicsID, m_Physics.ConvertToBtVec(msgx->Position));
+					m_Physics.setPosition(temp.PhysicsID, m_Physics.convertToBtVec(msgx->Position));
 				delete msg;
 				break;
 			}
@@ -169,8 +169,8 @@ void EntityCore::EntityMgrMsg()
 				EntityData temp;
 				m_EntityMgr.GetItem(msgx->ID, temp);
 				if(temp.PhysicsID > -1)
-					m_Physics.SetShapeRotation(temp.PhysicsID, m_Physics.ConvertToBtVec(msgx->Axis),msgx->Degree);
-				D3DXQUATERNION Rot=m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(temp.PhysicsID));
+					m_Physics.setRotation(temp.PhysicsID, m_Physics.convertToBtVec(msgx->Axis),msgx->Degree);
+				D3DXQUATERNION Rot=m_Physics.convertToDxRot(m_Physics.getRotation(temp.PhysicsID));
 				m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, Rot);
 				delete msg;
 				break;
@@ -182,8 +182,8 @@ void EntityCore::EntityMgrMsg()
 				EntityData temp;
 				m_EntityMgr.GetItem(msgx->ID, temp);
 				if(temp.PhysicsID > -1)
-					m_Physics.RotateShapeOnX(temp.PhysicsID, msgx->Degree);
-				D3DXQUATERNION Rot=m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(temp.PhysicsID));
+					m_Physics.rotateOnX(temp.PhysicsID, msgx->Degree);
+				D3DXQUATERNION Rot=m_Physics.convertToDxRot(m_Physics.getRotation(temp.PhysicsID));
 				m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, Rot);
 				delete msg;
 				break;
@@ -195,8 +195,8 @@ void EntityCore::EntityMgrMsg()
 				EntityData temp;
 				m_EntityMgr.GetItem(msgx->ID, temp);
 				if(temp.PhysicsID > -1)
-					m_Physics.RotateShapeOnY(temp.PhysicsID, msgx->Degree);
-				D3DXQUATERNION Rot=m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(temp.PhysicsID));
+					m_Physics.rotateOnY(temp.PhysicsID, msgx->Degree);
+				D3DXQUATERNION Rot=m_Physics.convertToDxRot(m_Physics.getRotation(temp.PhysicsID));
 				m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, Rot);
 				delete msg;
 				break;
@@ -208,8 +208,8 @@ void EntityCore::EntityMgrMsg()
 				EntityData temp;
 				m_EntityMgr.GetItem(msgx->ID, temp);
 				if(temp.PhysicsID > -1)
-					m_Physics.RotateShapeOnZ(temp.PhysicsID, msgx->Degree);
-				D3DXQUATERNION Rot=m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(temp.PhysicsID));
+					m_Physics.rotateOnZ(temp.PhysicsID, msgx->Degree);
+				D3DXQUATERNION Rot=m_Physics.convertToDxRot(m_Physics.getRotation(temp.PhysicsID));
 				m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, Rot);
 				delete msg;
 				break;
@@ -277,8 +277,8 @@ void EntityCore::Export()
 		//Export to Physics
 		if(vEntity[i].second.PhysicsID > -1)
 		{
-			m_Physics.ApplyCentralForce(vEntity[i].second.PhysicsID, 
-				m_Physics.ConvertToBtVec(vEntity[i].second.Force));
+			m_Physics.applyCentralForce(vEntity[i].second.PhysicsID, 
+				m_Physics.convertToBtVec(vEntity[i].second.Force));
 		}
 		//if(vEntity[i].second.Type == EP_SMALLMARBLE || vEntity[i].second.Type == EP_MEDIUMMARBLE ||
 		//	vEntity[i].second.Type == EP_LARGEMARBLE || vEntity[i].second.Type == EP_PLAYERMARBLE)
@@ -336,12 +336,12 @@ void EntityCore::PollPhysics()
 		{
 			btVector3 temp;
 			D3DXVECTOR3 newtemp;
-			newtemp = m_Physics.convertToDxVec(m_Physics.GetShapePosition(vEntity[i].second.PhysicsID));
+			newtemp = m_Physics.convertToDxVec(m_Physics.getPosition(vEntity[i].second.PhysicsID));
 			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_POSITION, newtemp);
-			newtemp = m_Physics.convertToDxVec(m_Physics.GetLinearVelocity(vEntity[i].second.PhysicsID));
+			newtemp = m_Physics.convertToDxVec(m_Physics.getLinearVelocity(vEntity[i].second.PhysicsID));
 			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_VELOCITY, newtemp);
 			D3DXQUATERNION temprot;
-			temprot = m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(vEntity[i].second.PhysicsID));
+			temprot = m_Physics.convertToDxRot(m_Physics.getRotation(vEntity[i].second.PhysicsID));
 			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_ROTATION, temprot);
 		}
 	}
