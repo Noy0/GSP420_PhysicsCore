@@ -130,7 +130,7 @@ void EntityCore::EntityMgrMsg()
 				EntityData temp;
 				m_EntityMgr.GetItem(msgx->ID, temp);
 				if(temp.PhysicsID > -1)
-					m_Physics.setLinearVelocity(temp.PhysicsID, m_Physics.convertToBtVec(msgx->Velocity));
+					m_Physics.setLinearVelocity(temp.PhysicsID, msgx->Velocity);
 				delete msg;
 				break;
 			}
@@ -338,7 +338,7 @@ void EntityCore::PollPhysics()
 			D3DXVECTOR3 newtemp;
 			newtemp = m_Physics.getPosition(vEntity[i].second.PhysicsID);
 			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_POSITION, newtemp);
-			newtemp = m_Physics.convertToDxVec(m_Physics.getLinearVelocity(vEntity[i].second.PhysicsID));
+			newtemp = m_Physics.getLinearVelocity(vEntity[i].second.PhysicsID);
 			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_VELOCITY, newtemp);
 			D3DXQUATERNION temprot;
 			temprot = m_Physics.convertToDxRot(m_Physics.getRotation(vEntity[i].second.PhysicsID));

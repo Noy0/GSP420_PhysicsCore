@@ -52,8 +52,8 @@ public:
 	D3DXVECTOR3 getPosition(int id);
 	void setPosition(int id, D3DXVECTOR3& position);
 
-	btVector3 getLinearVelocity(int id);//D3DXVECTOR3 getLinearVelocity(int id);
-	void setLinearVelocity(int id, btVector3& vel);//void setLinearVelocity(int id, D3DXVECTOR3& vel);
+	D3DXVECTOR3 getLinearVelocity(int id);
+	void setLinearVelocity(int id, D3DXVECTOR3& vel);
 
 	void applyCentralForce(int id, btVector3& force);//void applyCentralForce(int id, D3DXVECTOR3& force);
 	
@@ -64,11 +64,11 @@ public:
 	void rotateOnY(int id, float degree);
 	void rotateOnZ(int id, float degree);
 
-	btVector3 convertToBtVec(D3DXVECTOR3& old);
-	D3DXVECTOR3 convertToDxVec(btVector3& old);
+	btVector3 convertToBtVec(const D3DXVECTOR3& old);
+	D3DXVECTOR3 convertToDxVec(const btVector3& old);
 
-	btQuaternion convertToBtQuat(D3DXQUATERNION& old);
-	D3DXQUATERNION convertToDxRot(btVector3& old);
+	btQuaternion convertToBtQuat(const D3DXQUATERNION& old);
+	D3DXQUATERNION convertToDxRot(const btVector3& old);//D3DXQUATERNION convertToDxRot(const btQuaternion& old);
 
 	void setPhysics();
 };

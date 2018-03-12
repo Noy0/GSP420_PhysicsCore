@@ -326,25 +326,26 @@ void PhysicsWorld::setPosition(int id, D3DXVECTOR3& position)
 
 
 
-btVector3 PhysicsWorld::getLinearVelocity(int id)
+D3DXVECTOR3 PhysicsWorld::getLinearVelocity(int id)
 {
-	btVector3 vec(0, 0, 0);
+	D3DXVECTOR3 vec;
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
 	if (body && body->getMotionState())
 	{
-		vec = body->getLinearVelocity();
+		vec = convertToDxVec(body->getLinearVelocity());
 	}
 	return vec;
 }
 
-void PhysicsWorld::setLinearVelocity(int id, btVector3& vel)
+void PhysicsWorld::setLinearVelocity(int id, D3DXVECTOR3& vel)
 {
+	btVector3 btVel = convertToBtVec(vel);
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
 	if (body && body->getMotionState())
 	{
-		body->setLinearVelocity(vel);
+		body->setLinearVelocity(btVel);
 	}
 }
 
@@ -465,7 +466,7 @@ void PhysicsWorld::rotateOnZ(int id, float degree)
 
 
 
-btVector3 PhysicsWorld::convertToBtVec(D3DXVECTOR3& old)
+btVector3 PhysicsWorld::convertToBtVec(const D3DXVECTOR3& old)
 {
 	btVector3 newVec(old.x, old.y, old.z);
 
@@ -473,7 +474,7 @@ btVector3 PhysicsWorld::convertToBtVec(D3DXVECTOR3& old)
 }
 
 
-D3DXVECTOR3 PhysicsWorld::convertToDxVec(btVector3& old)
+D3DXVECTOR3 PhysicsWorld::convertToDxVec(const btVector3& old)
 {
 	D3DXVECTOR3 newVec(old.x(), old.y(), old.z());
 
@@ -481,14 +482,14 @@ D3DXVECTOR3 PhysicsWorld::convertToDxVec(btVector3& old)
 }
 
 
-btQuaternion PhysicsWorld::convertToBtQuat(D3DXQUATERNION& old)
+btQuaternion PhysicsWorld::convertToBtQuat(const D3DXQUATERNION& old)
 {
 	btQuaternion tempQuat(old.x, old.y, old.z, old.w);
 
 	return tempQuat;
 }
 
-D3DXQUATERNION PhysicsWorld::convertToDxRot(btVector3 &old)
+D3DXQUATERNION PhysicsWorld::convertToDxRot(const btVector3 &old)
 {
 	D3DXQUATERNION tempQuat(old.x(), old.y(), old.z(), old.w());
 
