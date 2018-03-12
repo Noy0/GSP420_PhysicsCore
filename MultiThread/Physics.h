@@ -7,6 +7,13 @@
 #include <d3dx9.h>
 //#include <stdio.h>
 
+enum AxisID
+{
+	X,
+	Y,
+	Z
+};
+
 class PhysicsWorld
 {
 private:
@@ -55,22 +62,24 @@ public:
 	D3DXVECTOR3 getLinearVelocity(int id);
 	void setLinearVelocity(int id, D3DXVECTOR3& vel);
 
-	void applyCentralForce(int id, btVector3& force);//void applyCentralForce(int id, D3DXVECTOR3& force);
+	void applyCentralForce(int id, D3DXVECTOR3& force);
 	
-	btVector3 getRotation(int id);//D3DXQUATERNION getRotation(int id);
-	void setRotation(int id, btQuaternion& quat );//void setRotation(int id, D3DXQUATERNION& quat);
-	void setRotation(int id, btVector3& axis,float degree);//void setRotation_Simple(int id, D3DXVECTOR3& axis, float degree);
-	void rotateOnX(int id, float degree);//void rotateOnCoordAxis(int id, float angle, AxisID axis);
-	void rotateOnY(int id, float degree);
-	void rotateOnZ(int id, float degree);
+	D3DXQUATERNION getRotation(int id);
+	void setRotation(int id, D3DXQUATERNION& quat);
+	void setRotation(int id, D3DXVECTOR3& axis,float degree);
+	void rotateOnCoordAxis(int id, float angle, AxisID axis);
 
 	btVector3 convertToBtVec(const D3DXVECTOR3& old);
 	D3DXVECTOR3 convertToDxVec(const btVector3& old);
 
 	btQuaternion convertToBtQuat(const D3DXQUATERNION& old);
-	D3DXQUATERNION convertToDxRot(const btVector3& old);//D3DXQUATERNION convertToDxRot(const btQuaternion& old);
+	D3DXQUATERNION convertToDxRot(const btQuaternion& old);
 
 	void setPhysics();
+
+private:
+	btQuaternion getBtRotation(int id);
+	void setBtRotation(int id, btQuaternion& quat);
 };
 
 extern PhysicsWorld* gPhysics;

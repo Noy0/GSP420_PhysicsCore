@@ -352,22 +352,25 @@ void PhysicsWorld::setLinearVelocity(int id, D3DXVECTOR3& vel)
 
 
 
-void PhysicsWorld::applyCentralForce(int id, btVector3& force)
+void PhysicsWorld::applyCentralForce(int id, D3DXVECTOR3& force)
 {
+	btVector3 btForce = convertToBtVec(force);
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
 	if (body && body->getMotionState())
 	{
-		body->applyCentralForce(force);
+		body->applyCentralForce(btForce);
 	}
 }
 
 
 
 
-btVector3 PhysicsWorld::getRotation(int id)
+D3DXQUATERNION PhysicsWorld::getRotation(int id)
 {
-	btVector3 rot;
+	return convertToDxRot(getBtRotation(id));
+	/*
+	D3DXQUATERNION rot;
 
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
@@ -376,36 +379,52 @@ btVector3 PhysicsWorld::getRotation(int id)
 		btTransform trans;
 		body->getMotionState()->getWorldTransform(trans);
 
-		rot = btVector3(float(trans.getRotation().getX()),
-			float(trans.getRotation().getY()), float(trans.getRotation().getZ()));
-		rot.setW(float(trans.getRotation().getW()));
+		rot = convertToDxRot(trans.getRotation());
+	}
+
+	return rot;*/
+}
+
+btQuaternion PhysicsWorld::getBtRotation(int id)
+{
+	btQuaternion rot;
+
+	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* body = btRigidBody::upcast(obj);
+	if (body && body->getMotionState())
+	{
+		btTransform trans;
+		body->getMotionState()->getWorldTransform(trans);
+
+		rot = trans.getRotation();
 	}
 
 	return rot;
 }
 
-void PhysicsWorld::setRotation(int id, btVector3& axis, float degree)
+void PhysicsWorld::setRotation(int id, D3DXQUATERNION& quat)
 {
-	degree = (3.14159265 / 180)*degree;
-	btQuaternion rot(btVector3(axis.getX(), axis.getY(), axis.getZ()), degree);
+	setBtRotation(id, convertToBtQuat(quat));
+	/*
+	btQuaternion btQuat = convertToBtQuat(quat);
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
 	if (body && body->getMotionState())
 	{
 		btTransform trans;
 		body->getMotionState()->getWorldTransform(trans);
-		trans.setRotation(rot);
+		trans.setRotation(btQuat);
 		body->getMotionState()->setWorldTransform(trans);
 	}
 	else// I dont think we will be useing this..but might as well have it just in case.
 	{
-		dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setRotation(rot);
+		dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setRotation(btQuat);
 	}
+	*/
 }
 
-void PhysicsWorld::setRotation(int id, btQuaternion& quat)
+void PhysicsWorld::setBtRotation(int id, btQuaternion& quat)
 {
-
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
 	if (body && body->getMotionState())
@@ -421,46 +440,46 @@ void PhysicsWorld::setRotation(int id, btQuaternion& quat)
 	}
 }
 
-void PhysicsWorld::rotateOnX(int id, float degree)
+void PhysicsWorld::setRotation(int id, D3DXVECTOR3& axis, float degree)
 {
-	btVector3 vec;
-	vec = getRotation(id);
-	btQuaternion q1(vec.getX(), vec.getY(), vec.getZ(), vec.w());
-
-	vec.setValue(-20, 0, 0);
-	btQuaternion q2(vec, degree*(3.14159265 / 180));
-	btQuaternion q3;
-	q3 = q2*q1;
-
-	setRotation(id, q3);
+	degree = (3.14159265 / 180)*degree;
+	btQuaternion rot(btVector3(axis.x, axis.y, axis.z), degree);
+	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* body = btRigidBody::upcast(obj);
+	if (body && body->getMotionState())
+	{
+		btTransform trans;
+		body->getMotionState()->getWorldTransform(trans);
+		trans.setRotation(rot);
+		body->getMotionState()->setWorldTransform(trans);
+	}
+	else// I dont think we will be useing this..but might as well have it just in case.
+	{
+		dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setRotation(rot);
+	}
 }
 
-void PhysicsWorld::rotateOnY(int id, float degree)
+void PhysicsWorld::rotateOnCoordAxis(int id, float degree, AxisID axis)
 {
+	btQuaternion q1 = getBtRotation(id);
 	btVector3 vec;
-	vec = getRotation(id);
-	btQuaternion q1(vec.getX(), vec.getY(), vec.getZ(), vec.w());
-
-	vec.setValue(0, -20, 0);
+	switch (axis)
+	{
+	case X:
+		vec = btVector3(-20, 0, 0);
+		break;
+	case Y:
+		vec = btVector3(0, -20, 0);
+		break;
+	case Z:
+		vec = btVector3(0, 0, -20);
+		break;
+	}
 	btQuaternion q2(vec, degree*(3.14159265 / 180));
 	btQuaternion q3;
 	q3 = q2*q1;
 
-	setRotation(id, q3);
-}
-
-void PhysicsWorld::rotateOnZ(int id, float degree)
-{
-	btVector3 vec;
-	vec = getRotation(id);
-	btQuaternion q1(vec.getX(), vec.getY(), vec.getZ(), vec.w());
-
-	vec.setValue(0, 0, -20);
-	btQuaternion q2(vec, degree*(3.14159265 / 180));
-	btQuaternion q3;
-	q3 = q2*q1;
-
-	setRotation(id, q3);
+	setBtRotation(id, q3);
 }
 
 
@@ -473,13 +492,14 @@ btVector3 PhysicsWorld::convertToBtVec(const D3DXVECTOR3& old)
 	return newVec;
 }
 
-
 D3DXVECTOR3 PhysicsWorld::convertToDxVec(const btVector3& old)
 {
 	D3DXVECTOR3 newVec(old.x(), old.y(), old.z());
 
 	return newVec;
 }
+
+
 
 
 btQuaternion PhysicsWorld::convertToBtQuat(const D3DXQUATERNION& old)
@@ -489,7 +509,7 @@ btQuaternion PhysicsWorld::convertToBtQuat(const D3DXQUATERNION& old)
 	return tempQuat;
 }
 
-D3DXQUATERNION PhysicsWorld::convertToDxRot(const btVector3 &old)
+D3DXQUATERNION PhysicsWorld::convertToDxRot(const btQuaternion &old)
 {
 	D3DXQUATERNION tempQuat(old.x(), old.y(), old.z(), old.w());
 
