@@ -467,8 +467,7 @@ void PhysicsWorld::rotateOnZ(int id, float degree)
 
 btVector3 PhysicsWorld::convertToBtVec(D3DXVECTOR3& old)
 {
-	btVector3 newVec;
-	newVec.setValue(old.x, old.y, old.z);
+	btVector3 newVec(old.x, old.y, old.z);
 
 	return newVec;
 }
@@ -476,25 +475,23 @@ btVector3 PhysicsWorld::convertToBtVec(D3DXVECTOR3& old)
 
 D3DXVECTOR3 PhysicsWorld::convertToDxVec(btVector3& old)
 {
-	D3DXVECTOR3 newVec;
-
-	newVec.x = old.getX();
-	newVec.y = old.getY();
-	newVec.z = old.getZ();
+	D3DXVECTOR3 newVec(old.x(), old.y(), old.z());
 
 	return newVec;
 }
 
 
-
-
-D3DXQUATERNION PhysicsWorld::convertToDxRot(btVector3 &oldRot)
+btQuaternion PhysicsWorld::convertToBtQuat(D3DXQUATERNION& old)
 {
-	D3DXQUATERNION tempQuat(oldRot.x(),oldRot.y(),oldRot.z(),oldRot.w());
+	btQuaternion tempQuat(old.x, old.y, old.z, old.w);
 
-	//D3DXMATRIX tempMatrix;
-	//D3DXMatrixRotationQuaternion(&tempMatrix,&tempQuat);
-	//return tempMatrix;
+	return tempQuat;
+}
+
+D3DXQUATERNION PhysicsWorld::convertToDxRot(btVector3 &old)
+{
+	D3DXQUATERNION tempQuat(old.x(), old.y(), old.z(), old.w());
+
 	return tempQuat;
 }
 

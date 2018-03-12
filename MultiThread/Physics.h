@@ -67,8 +67,8 @@ public:
 	btVector3 convertToBtVec(D3DXVECTOR3& old);
 	D3DXVECTOR3 convertToDxVec(btVector3& old);
 
-	//btQuaternion convertToBtQuat(D3DXQUATERNION& old);
-	D3DXQUATERNION convertToDxRot(btVector3& oldRot);
+	btQuaternion convertToBtQuat(D3DXQUATERNION& old);
+	D3DXQUATERNION convertToDxRot(btVector3& old);
 
 	void setPhysics();
 };
