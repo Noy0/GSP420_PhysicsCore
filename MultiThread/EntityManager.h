@@ -39,68 +39,12 @@ struct EntityData
 		//Steering
 	int SteeringType;
 
-	EntityData()
-	{
-		Position = D3DXVECTOR3(0,0,0);
-		Velocity = D3DXVECTOR3(0,0,0);
-		Force = D3DXVECTOR3(0,0,0);
-		Rotation = D3DXQUATERNION(0,0,0,1);
-		PhysicsID = -1;
-		SteeringType = 0;
+	EntityData();
 
-		ScriptFlag1 = 0;
-		ScriptFlag2 = 0;
-	}
-
-	void SetData(int type, void* value)
-	{
-		switch(type)
-		{
-		case EDTYPE_POSITION:
-			{
-				Position = *((D3DXVECTOR3*)value);
-				break;
-			}
-		case EDTYPE_VELOCITY:
-			{
-				Velocity = *((D3DXVECTOR3*)value);
-				break;
-			}
-		case EDTYPE_FORCE:
-			{
-				Force = *((D3DXVECTOR3*)value);
-				break;
-			}
-		case EDTYPE_ROTATION:
-			{
-				Rotation = *((D3DXQUATERNION*) value);
-				break;
-			}
-		case EDTYPE_PHYSICSID:
-			{
-				PhysicsID = *((int*)value);
-				break;
-			}
-		case EDTYPE_SCRIPTFLAG1:
-			{
-				ScriptFlag1 = *((int*)value);
-				break;
-			}
-		case EDTYPE_SCRIPTFLAG2:
-			{
-				ScriptFlag2 = *((int*)value);
-				break;
-			}
-		case EDTYPE_STEERINGTYPE:
-			{
-				SteeringType = *((int*)value);
-				break;
-			}
-
-		}
-	}
+	void SetData(int type, void* value);
 
 };
+
 class EntityManager : public BaseManager<EntityData>
 {
 public:
