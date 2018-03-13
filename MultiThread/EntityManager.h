@@ -3,23 +3,11 @@
 
 #include <d3d9.h>
 #include <d3dx9.h>
-#include "BaseManager.h"
-
-
-enum EEDType
-{
-	EDTYPE_POSITION,
-	EDTYPE_VELOCITY,
-	EDTYPE_FORCE,
-	EDTYPE_ROTATION,
-	EDTYPE_PHYSICSID,
-	EDTYPE_SCRIPTFLAG1,
-	EDTYPE_SCRIPTFLAG2,
-	EDTYPE_STEERINGTYPE
-};
+#include <List>
 
 struct EntityData
 {
+	int ID;
 	int Type;
 
 	//Physics attribures
@@ -40,22 +28,29 @@ struct EntityData
 	int SteeringType;
 
 	EntityData();
-
-	void SetData(int type, void* value);
-
 };
 
-class EntityManager : public BaseManager<EntityData>
+typedef std::list<EntityData> EntityList;
+typedef EntityList::iterator EntityIterator;
+class EntityManager
 {
+	EntityList entities;
+	int nextID;
+
 public:
 	EntityManager();
 	~EntityManager();
 
-	void Clear();
-	int AddItem(int type,int *id_OUT);
-	bool RemoveItem(int id);
-	void SetValue(int *id, int type, void* value);
-private:
+	EntityData* EntityManager::newEntity();
+	void addEntity(EntityData& entity);
+	bool removeEntity(int id);
+	void clear();
+
+	EntityData* getEntity(int id);
+
+	void cloneInto(EntityList& entityList);
+	EntityIterator begin();
+	EntityIterator end();
 };
 
 #endif
