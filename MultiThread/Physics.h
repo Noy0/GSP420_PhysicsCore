@@ -21,66 +21,66 @@ class PhysicsWorld
 {
 private:
 	///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
-	btDefaultCollisionConfiguration* collisionConfiguration;
+	btDefaultCollisionConfiguration* p_collisionConfiguration;
 
 	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
-	btCollisionDispatcher* dispatcher;
+	btCollisionDispatcher* p_dispatcher;
 
-	btAxisSweep3* overlappingPairCache;
+	btAxisSweep3* p_overlappingPairCache;
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-	btSequentialImpulseConstraintSolver* solver;
+	btSequentialImpulseConstraintSolver* p_solver;
 
-	btDiscreteDynamicsWorld* dynamicsWorld;
+	btDiscreteDynamicsWorld* p_dynamicsWorld;
 
-	btAlignedObjectArray<btCollisionShape*> collisionShapes;
+	btAlignedObjectArray<btCollisionShape*> p_collisionShapes;
 
-	int mNumOfObjects;
+	int numOfObjects;
 
 public:
 	PhysicsWorld();
 	~PhysicsWorld();
 
-	void createWorld(WorldInfo& WldInfo);
-	void clearPhysics();
+	void CreateWorld(WorldInfo& WldInfo);
+	void ClearPhysics();
 
-	void updateWorld(btScalar timeStep = (1 / 60), int maxSubSteps = 1);
+	void UpdateWorld(btScalar timeStep = (1 / 60), int maxSubSteps = 1);
 
-	void displayCallback();
+	void DisplayCallback();
 
-	int createCollision_Object(PhysicsMat& pMat, D3DXVECTOR3 position);
+	int CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position);
 
-	void deletePhysicsObject(int id);
+	void DeletePhysicsObject(int id);
 
-	bool isKinematic(int id);
-	void setAsKinematic(int id);
+	bool IsKinematic(int id);
+	void SetAsKinematic(int id);
 
-	D3DXVECTOR3 getPosition(int id);
-	void setPosition(int id, D3DXVECTOR3& position);
+	D3DXVECTOR3 GetPosition(int id);
+	void SetPosition(int id, D3DXVECTOR3& position);
 
-	D3DXVECTOR3 getLinearVelocity(int id);
-	void setLinearVelocity(int id, D3DXVECTOR3& vel);
+	D3DXVECTOR3 GetLinearVelocity(int id);
+	void SetLinearVelocity(int id, D3DXVECTOR3& vel);
 
-	void applyCentralForce(int id, D3DXVECTOR3& force);
+	void ApplyCentralForce(int id, D3DXVECTOR3& force);
 	
-	D3DXQUATERNION getRotation(int id);
-	void setRotation(int id, D3DXQUATERNION& quat);
-	void setRotation(int id, D3DXVECTOR3& axis,float degree);
-	void rotateOnCoordAxis(int id, float angle, AxisID axis);
+	D3DXQUATERNION GetRotation(int id);
+	void SetRotation(int id, D3DXQUATERNION& quat);
+	void SetRotation(int id, D3DXVECTOR3& axis,float degree);
+	void RotateOnCoordAxis(int id, float angle, AxisID axis);
 
-	btVector3 convertToBtVec(const D3DXVECTOR3& old);
-	D3DXVECTOR3 convertToDxVec(const btVector3& old);
+	btVector3 ConvertToBtVec(const D3DXVECTOR3& old);
+	D3DXVECTOR3 ConvertToDxVec(const btVector3& old);
 
-	btQuaternion convertToBtQuat(const D3DXQUATERNION& old);
-	D3DXQUATERNION convertToDxRot(const btQuaternion& old);
+	btQuaternion ConvertToBtQuat(const D3DXQUATERNION& old);
+	D3DXQUATERNION ConvertToDxRot(const btQuaternion& old);
 
-	void setPhysics();
+	void SetPhysics();
 
 private:
-	btQuaternion getBtRotation(int id);
-	void setBtRotation(int id, btQuaternion& quat);
+	btQuaternion GetBtRotation(int id);
+	void SetBtRotation(int id, btQuaternion& quat);
 };
 
-extern PhysicsWorld* gPhysics;
+extern PhysicsWorld* gp_physics;
 
 #endif

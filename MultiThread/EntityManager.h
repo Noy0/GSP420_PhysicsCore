@@ -10,24 +10,24 @@
 struct EntityData
 {
 	int ID;
-	int Type;
+	int type;
 
 	//Physics attribures
-	D3DXVECTOR3 Position;
-	D3DXVECTOR3 Velocity;
-	D3DXVECTOR3 Force;
-	D3DXQUATERNION Rotation;
-	int PhysicsID;
+	D3DXVECTOR3 position;
+	D3DXVECTOR3 velocity;
+	D3DXVECTOR3 force;
+	D3DXQUATERNION rotation;
+	int physicsID;
 
 	//Graphics attribures
 
 	//Scripting attributes
-	int ScriptFlag1;
-	int ScriptFlag2;
+	int scriptFlag1;
+	int scriptFlag2;
 
 	//AI attributes
 		//Steering
-	int SteeringType;
+	int steeringType;
 
 	EntityData();
 };
@@ -43,16 +43,16 @@ public:
 	EntityManager();
 	~EntityManager();
 
-	EntityData* EntityManager::newEntity();
-	void addEntity(EntityData& entity);
-	bool removeEntity(int id);
-	void clear();
+	EntityData* NewEntity();
+	void AddEntity(EntityData& entity);
+	bool RemoveEntity(int id);
+	void Clear();
 
-	EntityData* getEntity(int id);
+	EntityData* GetEntity(int id);
 
-	void cloneInto(EntityList& entityList);
-	EntityIterator begin();
-	EntityIterator end();
+	void CloneInto(EntityList& entityList);
+	EntityIterator Begin();
+	EntityIterator End();
 };
 
 #endif

@@ -4,8 +4,8 @@
 //Heavily Edited done by - TP
 
 
-EntityData::EntityData(): Position(0, 0, 0), Velocity(0, 0, 0), Force(0, 0, 0), Rotation(0, 0, 0, 1),
-						  PhysicsID(-1), SteeringType(0), ScriptFlag1(0), ScriptFlag2(0) {}
+EntityData::EntityData(): position(0, 0, 0), velocity(0, 0, 0), force(0, 0, 0), rotation(0, 0, 0, 1),
+						  physicsID(-1), steeringType(0), scriptFlag1(0), scriptFlag2(0) {}
 
 
 
@@ -23,7 +23,7 @@ EntityManager::~EntityManager()
 
 
 
-EntityData* EntityManager::newEntity()
+EntityData* EntityManager::NewEntity()
 {
 	EntityData temp;
 	temp.ID = nextID++;
@@ -31,12 +31,12 @@ EntityData* EntityManager::newEntity()
 	return &entities.back();
 }
 
-void EntityManager::addEntity(EntityData& entity)
+void EntityManager::AddEntity(EntityData& entity)
 {
 	entities.push_back(entity);
 }
 
-bool EntityManager::removeEntity(int id)
+bool EntityManager::RemoveEntity(int id)
 {
 	for(EntityIterator itr = entities.begin(); itr != entities.end(); ++itr)
 	{
@@ -49,14 +49,14 @@ bool EntityManager::removeEntity(int id)
 	return false;
 }
 
-void EntityManager::clear()
+void EntityManager::Clear()
 {
 	entities.clear();
 }
 
 
 
-EntityData* EntityManager::getEntity(int id)
+EntityData* EntityManager::GetEntity(int id)
 {
 	for (EntityIterator itr = entities.begin(); itr != entities.end(); ++itr)
 	{
@@ -70,17 +70,17 @@ EntityData* EntityManager::getEntity(int id)
 
 
 
-void EntityManager::cloneInto(EntityList& entityList)
+void EntityManager::CloneInto(EntityList& entityList)
 {
 	entityList = entities;
 }
 
-EntityIterator EntityManager::begin()
+EntityIterator EntityManager::Begin()
 {
 	return entities.begin();
 }
 
-EntityIterator EntityManager::end()
+EntityIterator EntityManager::End()
 {
 	return entities.end();
 }
