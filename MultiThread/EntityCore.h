@@ -37,11 +37,11 @@ private:
 	PhysicsWorld m_Physics;
 	//Exports
 		//Graphics
-	void TranslateToStaticMesh(pair<int, EntityData> &entity, DD_StaticMeshData &out);
+	void TranslateToStaticMesh(EntityData &entity, DD_StaticMeshData &out);
 	DD_StaticMesh m_StaticMeshExport;
 		//Scripting
 	DD_ScriptData m_ScriptExport;
-	void TranslateToScriptData(pair<int, EntityData> &entity, ScriptData &out);
+	void TranslateToScriptData(EntityData &entity, ScriptData &out);
 		//UI
 	DD_Picking m_PickingExport;
 	//void TranslateToPickingData(

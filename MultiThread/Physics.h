@@ -5,7 +5,17 @@
 #include "Util.h"
 #include <d3d9.h>
 #include <d3dx9.h>
+#include "PhysicsMat.h"
 //#include <stdio.h>
+
+//Heavily Edited done by - TP
+
+enum AxisID
+{
+	X,
+	Y,
+	Z
+};
 
 class PhysicsWorld
 {
@@ -28,51 +38,47 @@ private:
 	int mNumOfObjects;
 
 public:
-	//Kinematic funtions
-	void displayCallback();	
-	bool IsKinematic(int id);
-	void SetShapePosition(int id, btVector3& position);
-	void SetShapeRotation(int id,btQuaternion& quat );
-	void SetShapeRotation(int id, btVector3& axis,float degree);
-	void RotateShapeOnX(int id, float degree);
-	void RotateShapeOnY(int id, float degree);
-	void RotateShapeOnZ(int id, float degree);
-	void wipePhysics();
-	void setPhysics();
-
-	//Create sphere
-	int CreateCollisionSphere(SphereInfo& info);
-	//Create box
-	int CreateCollisionBox(BoxInfo& info);
-	//create cylinder using box info
-	int PhysicsWorld::CreateCollisionCylinder(BoxInfo& info);
-
-	//dynamic functions
-
-	void SetAsKinematic(int id);
-	void ApplyCentralForce(int id,btVector3& force);
-
-	btVector3 GetShapePosition(int id);
-	btVector3 GetShapeRotation(int id);
-
-	void CreateWorld(WorldInfo& WldInfo);
-	void UpdateWorld(btScalar timeStep=(1/60), int maxSubSteps=1);
 	PhysicsWorld();
 	~PhysicsWorld();
 
-	btVector3 ConvertToBtVec(D3DXVECTOR3& old);
-	D3DXVECTOR3 convertToDxVec(btVector3& old);
+	void createWorld(WorldInfo& WldInfo);
+	void clearPhysics();
 
-	D3DXQUATERNION ConvertToDxRot(btVector3& oldRot);
+	void updateWorld(btScalar timeStep = (1 / 60), int maxSubSteps = 1);
 
+	void displayCallback();
 
-	btVector3 GetLinearVelocity(int id);
-	void SetLinearVelocity(int id, btVector3& vel);
+	int createCollision_Object(PhysicsMat& pMat, D3DXVECTOR3 position);
 
-	void PhysicsWorld::DeletePhysicsObject(int id);
+	void deletePhysicsObject(int id);
+
+	bool isKinematic(int id);
+	void setAsKinematic(int id);
+
+	D3DXVECTOR3 getPosition(int id);
+	void setPosition(int id, D3DXVECTOR3& position);
+
+	D3DXVECTOR3 getLinearVelocity(int id);
+	void setLinearVelocity(int id, D3DXVECTOR3& vel);
+
+	void applyCentralForce(int id, D3DXVECTOR3& force);
 	
+	D3DXQUATERNION getRotation(int id);
+	void setRotation(int id, D3DXQUATERNION& quat);
+	void setRotation(int id, D3DXVECTOR3& axis,float degree);
+	void rotateOnCoordAxis(int id, float angle, AxisID axis);
 
+	btVector3 convertToBtVec(const D3DXVECTOR3& old);
+	D3DXVECTOR3 convertToDxVec(const btVector3& old);
 
+	btQuaternion convertToBtQuat(const D3DXQUATERNION& old);
+	D3DXQUATERNION convertToDxRot(const btQuaternion& old);
+
+	void setPhysics();
+
+private:
+	btQuaternion getBtRotation(int id);
+	void setBtRotation(int id, btQuaternion& quat);
 };
 
 extern PhysicsWorld* gPhysics;
