@@ -70,7 +70,7 @@ void EntityCore::EntityMgrMsg()
 				//Add object to physics
 				switch(newEPD->BodyType)
 				{
-				case BODYTYPE_SPHERE:
+				case COLLIDER_SPHERE:
 					{
 						SpherePMat pMat;
 						pMat.friction = newEPD->Friction;
@@ -78,14 +78,14 @@ void EntityCore::EntityMgrMsg()
 						pMat.mass = newEPD->Mass;
 						pMat.angularDamping = newEPD->AngularDampen;
 						pMat.radius = newEPD->Radius;
-						int pID = m_Physics.createCollision_Sphere(pMat, msgx->Position);
+						int pID = m_Physics.createCollision_Object(pMat, msgx->Position);
 						entity->PhysicsID = pID;
-						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
+						if(newEPD->PhysicsType == PHYSICS_KINEMATIC)
 							m_Physics.setAsKinematic(pID);
 
 						break;
 					}
-				case BODYTYPE_CYLINDER:
+				case COLLIDER_CYLINDER:
 					{
 						CylinderPMat pMat;
 						pMat.friction = newEPD->Friction;
@@ -94,23 +94,23 @@ void EntityCore::EntityMgrMsg()
 						pMat.scalar = newEPD->HalfScale;
 						//radius
 						//length
-						int pID = m_Physics.createCollision_Cylinder(pMat, msgx->Position);
+						int pID = m_Physics.createCollision_Object(pMat, msgx->Position);
 						entity->PhysicsID = pID;
-						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
+						if(newEPD->PhysicsType == PHYSICS_KINEMATIC)
 							m_Physics.setAsKinematic(pID);
 
 						break;
 					}
-				case BODYTYPE_BOX:
+				case COLLIDER_BOX:
 					{
 						BoxPMat pMat;
 						pMat.friction = newEPD->Friction;
 						pMat.restitution = newEPD->Restitution;
 						pMat.mass = newEPD->Mass;
 						pMat.scalar = newEPD->HalfScale;
-						int pID = m_Physics.createCollision_Box(pMat, msgx->Position);
+						int pID = m_Physics.createCollision_Object(pMat, msgx->Position);
 						entity->PhysicsID = pID;
-						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
+						if(newEPD->PhysicsType == PHYSICS_KINEMATIC)
 							m_Physics.setAsKinematic(pID);
 
 						break;

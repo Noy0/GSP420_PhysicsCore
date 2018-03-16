@@ -140,26 +140,57 @@ void PhysicsWorld::displayCallback()
 
 
 
-
-int PhysicsWorld::createCollision_Box(PhysicsMat& pMat, D3DXVECTOR3 position)
+int PhysicsWorld::createCollision_Object(PhysicsMat& pMat, D3DXVECTOR3 position)
 {
-	// Creates a Box Object.
+	btCollisionShape* colShape;
+	switch (pMat.type)
+	{
+		case COLLIDER_PLANE:
+		{
+			break;
+		}
+		case COLLIDER_BOX:
+		{
+			BoxPMat& boxPMat = (BoxPMat&)pMat;
+			btVector3 size(convertToBtVec(boxPMat.scalar));
 
-	BoxPMat& boxPMat = (BoxPMat&)pMat;
-	btVector3 size(convertToBtVec(boxPMat.scalar));
+			colShape = new btBoxShape(size);
+			break;
+		}
+		case COLLIDER_SPHERE:
+		{
+			SpherePMat& sphPMat = (SpherePMat&)pMat;
 
-	btCollisionShape* colShape = new btBoxShape(size);
+			colShape = new btSphereShape(btScalar(sphPMat.radius));
+			break;
+		}
+		case COLLIDER_CYLINDER:
+		{
+			CylinderPMat& cylPMat = (CylinderPMat&)pMat;
+			btVector3 size(cylPMat.radius * cylPMat.scalar.x, cylPMat.length * cylPMat.scalar.y, cylPMat.radius * cylPMat.scalar.z);
+
+			colShape = new btCylinderShape(size);
+			break;
+		}
+		case COLLIDER_CAPSULE:
+		{
+
+			break;
+		}
+	default:
+		return mNumOfObjects;
+	}
 	collisionShapes.push_back(colShape);
 
 	btTransform startTransform;
 	startTransform.setIdentity();
 
-	btScalar	mass = boxPMat.mass;
+	btScalar mass = pMat.mass;
 
 	//rigidbody is dynamic if and only if mass is non zero, otherwise static
 	bool isDynamic = (mass != 0.f);
 
-	btVector3 inertiaTensor = convertToBtVec(boxPMat.inertiaTensor);
+	btVector3 inertiaTensor = convertToBtVec(pMat.inertiaTensor);
 	if (isDynamic)
 		colShape->calculateLocalInertia(mass, inertiaTensor);
 
@@ -168,99 +199,17 @@ int PhysicsWorld::createCollision_Box(PhysicsMat& pMat, D3DXVECTOR3 position)
 	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
 	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, inertiaTensor);
-	btRigidBody* body = new btRigidBody(rbInfo);
-
-	rbInfo.m_friction = boxPMat.friction;
-	rbInfo.m_restitution = boxPMat.restitution;
-	rbInfo.m_linearDamping = boxPMat.linearDamping;
-	rbInfo.m_angularDamping = boxPMat.angularDamping;
-
-	dynamicsWorld->addRigidBody(body);
-
-	mNumOfObjects++;
-	return mNumOfObjects;
-
-}
-
-int PhysicsWorld::createCollision_Sphere(PhysicsMat& pMat, D3DXVECTOR3 position)
-{
-	//create a dynamic rigidbody Sphere
-
-	SpherePMat& sphPMat = (SpherePMat&)pMat;
-
-	btCollisionShape* colShape = new btSphereShape(btScalar(sphPMat.radius));
-	collisionShapes.push_back(colShape);
-
-	/// Create Dynamic Objects
-	btTransform startTransform;
-	startTransform.setIdentity();
-
-	btScalar	mass = sphPMat.mass;
-
-	//rigidbody is dynamic if and only if mass is non zero, otherwise static
-	bool isDynamic = (mass != 0.f);
-
-	btVector3 inertiaTensor = convertToBtVec(sphPMat.inertiaTensor);
-	if (isDynamic)
-		colShape->calculateLocalInertia(mass, inertiaTensor);
-
-	startTransform.setOrigin(convertToBtVec(position));
-
-	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, inertiaTensor);
-
-	rbInfo.m_friction = sphPMat.friction;
-	rbInfo.m_restitution = sphPMat.restitution;
-	rbInfo.m_linearDamping = sphPMat.linearDamping;
-	rbInfo.m_angularDamping = sphPMat.angularDamping;
+	
+	rbInfo.m_friction = pMat.friction;
+	rbInfo.m_restitution = pMat.restitution;
+	rbInfo.m_linearDamping = pMat.linearDamping;
+	rbInfo.m_angularDamping = pMat.angularDamping;
 	btRigidBody* body = new btRigidBody(rbInfo);
 
 	dynamicsWorld->addRigidBody(body);
 
 	mNumOfObjects++;
 	return mNumOfObjects;
-}
-
-int PhysicsWorld::createCollision_Cylinder(PhysicsMat& pMat, D3DXVECTOR3 position)
-{
-	// Creates a Box Object.
-
-	CylinderPMat& cylPMat = (CylinderPMat&)pMat;
-	btVector3 size(cylPMat.radius * cylPMat.scalar.x, cylPMat.length * cylPMat.scalar.y, cylPMat.radius * cylPMat.scalar.z);
-
-	btCollisionShape* colShape = new btCylinderShape(size);
-	collisionShapes.push_back(colShape);
-
-	btTransform startTransform;
-	startTransform.setIdentity();
-
-	btScalar	mass = cylPMat.mass;
-
-	//rigidbody is dynamic if and only if mass is non zero, otherwise static
-	bool isDynamic = (mass != 0.f);
-
-	btVector3 inertiaTensor = convertToBtVec(cylPMat.inertiaTensor);
-	if (isDynamic)
-		colShape->calculateLocalInertia(mass, inertiaTensor);
-
-	startTransform.setOrigin(convertToBtVec(position));
-
-	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, colShape, inertiaTensor);
-	btRigidBody* body = new btRigidBody(rbInfo);
-
-	rbInfo.m_friction = cylPMat.friction;
-	rbInfo.m_restitution = cylPMat.restitution;
-	rbInfo.m_linearDamping = cylPMat.linearDamping;
-	rbInfo.m_angularDamping = cylPMat.angularDamping;
-
-	dynamicsWorld->addRigidBody(body);
-
-	mNumOfObjects++;
-	return mNumOfObjects;
-
 }
 
 
