@@ -106,8 +106,8 @@ void ResourceLoader::Load()
 	{
 		//Load Entity Properties
 		EntityPropertyData epd;
-		epd.BodyType = BODYTYPE_SPHERE;
-		epd.PhysicsType = PHYSICSTYPE_DYNAMIC;
+		epd.BodyType = COLLIDER_SPHERE;
+		epd.PhysicsType = PHYSICS_DYNAMIC;
 		epd.Friction = 0.9;
 		epd.Restitution = 0.5;
 		epd.Radius = 0.5;
@@ -119,7 +119,7 @@ void ResourceLoader::Load()
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_DEMO, new EntityPropertyData(epd));
 		//small marble
-		epd.BodyType = BODYTYPE_SPHERE;
+		epd.BodyType = COLLIDER_SPHERE;
 		epd.Friction = 0.9;
 		epd.Restitution = 0.5;
 		epd.Radius = 0.5;
@@ -131,7 +131,7 @@ void ResourceLoader::Load()
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_SMALLMARBLE, new EntityPropertyData(epd));
 		//Medium Marble
-		epd.BodyType = BODYTYPE_SPHERE;
+		epd.BodyType = COLLIDER_SPHERE;
 		epd.Friction = 0.9;
 		epd.Restitution = 0.5;
 		epd.Radius = 0.75;
@@ -143,7 +143,7 @@ void ResourceLoader::Load()
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_MEDIUMMARBLE, new EntityPropertyData(epd));
 		//Large marble
-		epd.BodyType = BODYTYPE_SPHERE;
+		epd.BodyType = COLLIDER_SPHERE;
 		epd.Friction = 0.9;
 		epd.Restitution = 0.5;
 		epd.Radius = 1;
@@ -155,7 +155,7 @@ void ResourceLoader::Load()
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_LARGEMARBLE, new EntityPropertyData(epd));
 		//platform
-		epd.BodyType = BODYTYPE_CYLINDER;
+		epd.BodyType = COLLIDER_CYLINDER;
 		epd.Friction = 4.0f;
 		epd.Restitution = 0;
 		epd.Radius = 1;
@@ -165,10 +165,10 @@ void ResourceLoader::Load()
 		epd.HalfScale = D3DXVECTOR3(20.0f, 1.0f, 20.0f);
 		epd.Mass = 0;
 		epd.ScriptName = "";
-		epd.PhysicsType = PHYSICSTYPE_KINEMATIC;
+		epd.PhysicsType = PHYSICS_KINEMATIC;
 		gEPMgr->AddItem(EP_PLATFORM, new EntityPropertyData(epd));
 		//box
-		epd.BodyType = BODYTYPE_BOX;
+		epd.BodyType = COLLIDER_BOX;
 		epd.Friction = 4.0f;
 		epd.Restitution = 0;
 		epd.Radius = 1;
@@ -178,11 +178,11 @@ void ResourceLoader::Load()
 		epd.HalfScale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 		epd.Mass = 0;
 		epd.ScriptName = "";
-		epd.PhysicsType = PHYSICSTYPE_KINEMATIC;
+		epd.PhysicsType = PHYSICS_KINEMATIC;
 		gEPMgr->AddItem(EP_BOX, new EntityPropertyData(epd));
 		//Player Marble		
-		epd.BodyType = BODYTYPE_SPHERE;
-		epd.PhysicsType = PHYSICSTYPE_DYNAMIC;
+		epd.BodyType = COLLIDER_SPHERE;
+		epd.PhysicsType = PHYSICS_DYNAMIC;
 		epd.Friction = 0.9;
 		epd.Restitution = 0.5;
 		epd.Radius = 1.0;

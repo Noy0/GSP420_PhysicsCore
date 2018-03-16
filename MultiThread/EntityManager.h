@@ -3,115 +3,56 @@
 
 #include <d3d9.h>
 #include <d3dx9.h>
-#include "BaseManager.h"
+#include <List>
 
-
-enum EEDType
-{
-	EDTYPE_POSITION,
-	EDTYPE_VELOCITY,
-	EDTYPE_FORCE,
-	EDTYPE_ROTATION,
-	EDTYPE_PHYSICSID,
-	EDTYPE_SCRIPTFLAG1,
-	EDTYPE_SCRIPTFLAG2,
-	EDTYPE_STEERINGTYPE
-};
+//Heavily Edited done by - TP
 
 struct EntityData
 {
-	int Type;
+	int ID;
+	int type;
 
 	//Physics attribures
-	D3DXVECTOR3 Position;
-	D3DXVECTOR3 Velocity;
-	D3DXVECTOR3 Force;
-	D3DXQUATERNION Rotation;
-	int PhysicsID;
+	D3DXVECTOR3 position;
+	D3DXVECTOR3 velocity;
+	D3DXVECTOR3 force;
+	D3DXQUATERNION rotation;
+	int physicsID;
 
 	//Graphics attribures
 
 	//Scripting attributes
-	int ScriptFlag1;
-	int ScriptFlag2;
+	int scriptFlag1;
+	int scriptFlag2;
 
 	//AI attributes
 		//Steering
-	int SteeringType;
+	int steeringType;
 
-	EntityData()
-	{
-		Position = D3DXVECTOR3(0,0,0);
-		Velocity = D3DXVECTOR3(0,0,0);
-		Force = D3DXVECTOR3(0,0,0);
-		Rotation = D3DXQUATERNION(0,0,0,1);
-		PhysicsID = -1;
-		SteeringType = 0;
-
-		ScriptFlag1 = 0;
-		ScriptFlag2 = 0;
-	}
-
-	void SetData(int type, void* value)
-	{
-		switch(type)
-		{
-		case EDTYPE_POSITION:
-			{
-				Position = *((D3DXVECTOR3*)value);
-				break;
-			}
-		case EDTYPE_VELOCITY:
-			{
-				Velocity = *((D3DXVECTOR3*)value);
-				break;
-			}
-		case EDTYPE_FORCE:
-			{
-				Force = *((D3DXVECTOR3*)value);
-				break;
-			}
-		case EDTYPE_ROTATION:
-			{
-				Rotation = *((D3DXQUATERNION*) value);
-				break;
-			}
-		case EDTYPE_PHYSICSID:
-			{
-				PhysicsID = *((int*)value);
-				break;
-			}
-		case EDTYPE_SCRIPTFLAG1:
-			{
-				ScriptFlag1 = *((int*)value);
-				break;
-			}
-		case EDTYPE_SCRIPTFLAG2:
-			{
-				ScriptFlag2 = *((int*)value);
-				break;
-			}
-		case EDTYPE_STEERINGTYPE:
-			{
-				SteeringType = *((int*)value);
-				break;
-			}
-
-		}
-	}
-
+	EntityData();
 };
-class EntityManager : public BaseManager<EntityData>
+
+typedef std::list<EntityData> EntityList;
+typedef EntityList::iterator EntityIterator;
+class EntityManager
 {
+	EntityList entities;
+	int nextID;
+
 public:
 	EntityManager();
 	~EntityManager();
 
+	EntityData* NewEntity();
+	void AddEntity(EntityData& entity);
+	bool RemoveEntity(int id);
 	void Clear();
-	int AddItem(int type,int *id_OUT);
-	bool RemoveItem(int id);
-	void SetValue(int *id, int type, void* value);
-private:
+
+	EntityData* GetEntity(int id);
+
+	void CloneInto(EntityList& entityList);
+	EntityIterator Begin();
+	EntityIterator End();
 };
 
 #endif

@@ -5,11 +5,15 @@
 #include "GraphicsMessage.h"
 #include "ScriptingCore\ScriptMessages.h"
 #include "CoreManager.h"
-#include "Util.h"
+//#include "Util.h"
+#include "PhysicsMat.h"
 #include "EPhysics.h"
 #include "UIMessage.h"
 #include "GameMessage.h"
 #include "AI_Message.h"
+
+
+//Editing done by - TP
 
 EntityCore::EntityCore()
 {
@@ -50,179 +54,211 @@ void EntityCore::EntityMgrMsg()
 	queue<SMessage*> tempQueue;
 	while(!m_QueueBuffer.empty())
 	{
-		SMessage* msg = m_QueueBuffer.front();
-		switch(msg->Message)
+		SMessage* p_msg = m_QueueBuffer.front();
+		switch(p_msg->Message)
 		{
 		case MSG_ADDENTITY:
 			{
-				SMessageAddEntity* msgx = (SMessageAddEntity*)msg;
-				EntityPropertyData* newEPD = gEPMgr->GetItem(msgx->Type);
+				SMessageAddEntity* p_msgx = (SMessageAddEntity*)p_msg;
+				EntityPropertyData* p_newEPD = gEPMgr->GetItem(p_msgx->Type);
 				//Add entity to manager
-				m_EntityMgr.AddItem(msgx->Type, msgx->ID);
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_POSITION, &(msgx->Position));
+				EntityData* p_entity = m_EntityMgr.NewEntity();
+				*(p_msgx->ID) = p_entity->ID;
+				p_entity->type = p_msgx->Type;
+				p_entity->position = p_msgx->Position;
 
 				//Add object to physics
-				switch(newEPD->BodyType)
+				switch(p_newEPD->BodyType)
 				{
-				case BODYTYPE_SPHERE:
+				case COLLIDER_SPHERE:
 					{
-						SphereInfo info;
-						info.orgin = m_Physics.ConvertToBtVec(msgx->Position);
-						info.friction = newEPD->Friction;
-						info.restitution = newEPD->Restitution;
-						info.mass = newEPD->Mass;
-						info.angularDamping = newEPD->AngularDampen;
-						info.radius = newEPD->Radius;
-						int temp = m_Physics.CreateCollisionSphere(info);
-						m_EntityMgr.SetValue(msgx->ID, EDTYPE_PHYSICSID, &temp);
-						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
-							m_Physics.SetAsKinematic(temp);
+						SpherePMat pMat;
+						pMat.friction = p_newEPD->Friction;
+						pMat.restitution = p_newEPD->Restitution;
+						pMat.mass = p_newEPD->Mass;
+						pMat.angularDamping = p_newEPD->AngularDampen;
+						pMat.radius = p_newEPD->Radius;
+						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
+						p_entity->physicsID = pID;
+						if(p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
+							m_Physics.SetAsKinematic(pID);
+
 						break;
 					}
-				case BODYTYPE_CYLINDER:
+				case COLLIDER_CYLINDER:
 					{
-						BoxInfo info;
-						info.orgin = m_Physics.ConvertToBtVec(msgx->Position);
-						info.friction = newEPD->Friction;
-						info.restitution = newEPD->Restitution;
-						info.mass = newEPD->Mass;
-						info.halfscale = m_Physics.ConvertToBtVec(newEPD->HalfScale);
-						int temp = m_Physics.CreateCollisionCylinder(info);
-						m_EntityMgr.SetValue(msgx->ID, EDTYPE_PHYSICSID, &temp);
-						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
-							m_Physics.SetAsKinematic(temp);
+						CylinderPMat pMat;
+						pMat.friction = p_newEPD->Friction;
+						pMat.restitution = p_newEPD->Restitution;
+						pMat.mass = p_newEPD->Mass;
+						pMat.scalar = p_newEPD->HalfScale;
+						//radius
+						//length
+						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
+						p_entity->physicsID = pID;
+						if(p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
+							m_Physics.SetAsKinematic(pID);
+
+						break;
 					}
-				case BODYTYPE_BOX:
+				case COLLIDER_BOX:
 					{
-						BoxInfo info;
-						info.orgin = m_Physics.ConvertToBtVec(msgx->Position);
-						info.friction = newEPD->Friction;
-						info.restitution = newEPD->Restitution;
-						info.mass = newEPD->Mass;
-						info.halfscale = m_Physics.ConvertToBtVec(newEPD->HalfScale);
-						int temp = m_Physics.CreateCollisionBox(info);
-						m_EntityMgr.SetValue(msgx->ID, EDTYPE_PHYSICSID,&temp);
-						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
-							m_Physics.SetAsKinematic(temp);
+						BoxPMat pMat;
+						pMat.friction = p_newEPD->Friction;
+						pMat.restitution = p_newEPD->Restitution;
+						pMat.mass = p_newEPD->Mass;
+						pMat.scalar = p_newEPD->HalfScale;
+						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
+						p_entity->physicsID = pID;
+						if(p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
+							m_Physics.SetAsKinematic(pID);
+
 						break;
 					}
 				}
-				delete msg;
+
+				delete p_msg;
 				break;
 			}
 		case MSG_REMOVEENTITY:
 			{
-				SMessageRemoveEntity* msgx = (SMessageRemoveEntity*)msg;
+				SMessageRemoveEntity* msgx = (SMessageRemoveEntity*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
 				//Remove object from physics
-				EntityData temp;
-				m_EntityMgr.GetItem(msgx->ID,temp);
-				//if(temp.PhysicsID > -1)
-				//	m_Physics.DeletePhysicsObject(temp.PhysicsID);
+				if(p_entity->physicsID > -1)
+					m_Physics.DeletePhysicsObject(p_entity->physicsID);
 				//Remove entity from manager
-				m_EntityMgr.RemoveItem(*(msgx->ID));
-				delete msg;
+				m_EntityMgr.RemoveEntity(eID);
+
+				delete p_msg;
 				break;
 			}
 		case MSG_SETVELOCITY:
 			{
-				SMessageSetVelocity* msgx = (SMessageSetVelocity*)msg;
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_VELOCITY, msgx->Velocity);
-				EntityData temp;
-				m_EntityMgr.GetItem(msgx->ID, temp);
-				if(temp.PhysicsID > -1)
-					m_Physics.SetLinearVelocity(temp.PhysicsID, m_Physics.ConvertToBtVec(msgx->Velocity));
-				delete msg;
+				SMessageSetVelocity* msgx = (SMessageSetVelocity*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->velocity = msgx->Velocity;
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetLinearVelocity(p_entity->physicsID, msgx->Velocity);
+
+				delete p_msg;
 				break;
 			}
 		case MSG_SETFORCE:
 			{
-				SMessageSetForce* msgx = (SMessageSetForce*)msg;
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_FORCE, msgx->Force);
-				delete msg;
+				SMessageSetForce* msgx = (SMessageSetForce*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->force = msgx->Force;
+
+				delete p_msg;
 				break;
 			}
 		case MSG_INCSCRIPTFLAG1:
 			{
-				SMessageIncScriptFlag1* msgx = (SMessageIncScriptFlag1*)msg;
-				EntityData temp;
-				m_EntityMgr.GetItem(&(msgx->ID), temp);
-				++temp.ScriptFlag1;
-				m_EntityMgr.SetValue(&(msgx->ID), EDTYPE_SCRIPTFLAG1, &temp.ScriptFlag1);
-				delete msg;
+				SMessageIncScriptFlag1* msgx = (SMessageIncScriptFlag1*)p_msg;
+				int eID = msgx->ID;
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				++(p_entity->scriptFlag1);
+
+				delete p_msg;
 				break;
 			}
 		case MSG_SETPOSITION:
 			{
-				SMessageSetPosition* msgx = (SMessageSetPosition*)msg;
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_POSITION, msgx->Position);
-				EntityData temp;
-				m_EntityMgr.GetItem(msgx->ID, temp);
-				if(temp.PhysicsID > -1)
-					m_Physics.SetShapePosition(temp.PhysicsID, m_Physics.ConvertToBtVec(msgx->Position));
-				delete msg;
+				SMessageSetPosition* msgx = (SMessageSetPosition*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->position = msgx->Position;
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetPosition(p_entity->physicsID, msgx->Position);
+
+				delete p_msg;
 				break;
 			}
 		case MSG_SETROTATION:
 			{
-				SMessageSetRotation* msgx = (SMessageSetRotation*)msg;
-			//	m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, msgx->);
-				EntityData temp;
-				m_EntityMgr.GetItem(msgx->ID, temp);
-				if(temp.PhysicsID > -1)
-					m_Physics.SetShapeRotation(temp.PhysicsID, m_Physics.ConvertToBtVec(msgx->Axis),msgx->Degree);
-				D3DXQUATERNION Rot=m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(temp.PhysicsID));
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, Rot);
-				delete msg;
+				SMessageSetRotation* msgx = (SMessageSetRotation*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetRotation(p_entity->physicsID, msgx->Axis, msgx->Degree);
+
+				D3DXQUATERNION Rot = m_Physics.GetRotation(p_entity->physicsID);// WARNING - relies on entity having physics id
+				p_entity->rotation = Rot;
+
+				delete p_msg;
 				break;
 			}
 		case MSG_ROTATEONX:
 			{
-				SMessageAddRotationOnX* msgx = (SMessageAddRotationOnX*)msg;
-			//	m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, msgx->);
-				EntityData temp;
-				m_EntityMgr.GetItem(msgx->ID, temp);
-				if(temp.PhysicsID > -1)
-					m_Physics.RotateShapeOnX(temp.PhysicsID, msgx->Degree);
-				D3DXQUATERNION Rot=m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(temp.PhysicsID));
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, Rot);
-				delete msg;
+				SMessageAddRotationOnX* msgx = (SMessageAddRotationOnX*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				if(p_entity->physicsID > -1)
+					m_Physics.RotateOnCoordAxis(p_entity->physicsID, msgx->Degree, X);
+
+				D3DXQUATERNION Rot = m_Physics.GetRotation(p_entity->physicsID);// WARNING - relies on entity having physics id
+				p_entity->rotation = Rot;
+
+				delete p_msg;
 				break;
 			}
 			case MSG_ROTATEONY:
 			{
-				SMessageAddRotationOnY* msgx = (SMessageAddRotationOnY*)msg;
-			//	m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, msgx->);
-				EntityData temp;
-				m_EntityMgr.GetItem(msgx->ID, temp);
-				if(temp.PhysicsID > -1)
-					m_Physics.RotateShapeOnY(temp.PhysicsID, msgx->Degree);
-				D3DXQUATERNION Rot=m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(temp.PhysicsID));
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, Rot);
-				delete msg;
+				SMessageAddRotationOnY* msgx = (SMessageAddRotationOnY*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.RotateOnCoordAxis(p_entity->physicsID, msgx->Degree, Y);
+
+				D3DXQUATERNION Rot = m_Physics.GetRotation(p_entity->physicsID);// WARNING - relies on entity having physics id
+				p_entity->rotation = Rot;
+
+				delete p_msg;
 				break;
 			}
 			case MSG_ROTATEONZ:
 			{
-				SMessageAddRotationOnZ* msgx = (SMessageAddRotationOnZ*)msg;
-			//	m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, msgx->);
-				EntityData temp;
-				m_EntityMgr.GetItem(msgx->ID, temp);
-				if(temp.PhysicsID > -1)
-					m_Physics.RotateShapeOnZ(temp.PhysicsID, msgx->Degree);
-				D3DXQUATERNION Rot=m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(temp.PhysicsID));
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_ROTATION, Rot);
-				delete msg;
+				SMessageAddRotationOnZ* msgx = (SMessageAddRotationOnZ*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.RotateOnCoordAxis(p_entity->physicsID, msgx->Degree, Z);
+
+				D3DXQUATERNION Rot = m_Physics.GetRotation(p_entity->physicsID);// WARNING - relies on entity having physics id
+				p_entity->rotation = Rot;
+
+				delete p_msg;
 				break;
 			}
 			case MSG_SETSTEERING:
 			{
-				SMessageSetSteering* msgx = (SMessageSetSteering*)msg;
-				m_EntityMgr.SetValue(msgx->ID, EDTYPE_STEERINGTYPE, &(msgx->SteeringType));
+				SMessageSetSteering* msgx = (SMessageSetSteering*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->steeringType = msgx->SteeringType;
+
+				delete p_msg;
 				break;
 			}
 		default:
 			{
-				tempQueue.push(msg);
+				tempQueue.push(p_msg);
 				break;
 			}
 		}
@@ -237,8 +273,8 @@ void EntityCore::PhysicsMsg()
 
 void EntityCore::Export()
 {
-	vector<pair<int, EntityData>> vEntity;
-	m_EntityMgr.GetCopy(vEntity);
+	EntityList entityList;
+	m_EntityMgr.CloneInto(entityList);
 
 	//GraphicsCore export
 	vector<DD_StaticMeshData> staticMeshExport;
@@ -252,69 +288,70 @@ void EntityCore::Export()
 	vector<DDSteeringData> steerExport;
 	vector<SteeringObstacles> obstacleExport;
 
-	for(int i = 0; i < vEntity.size(); ++i)
+	EntityList::iterator end = entityList.end();
+	for (EntityList::iterator itr = entityList.begin(); itr != end; ++itr)
 	{
+		EntityData entityData = *itr;
 		//Export to Graphics
-		switch(gEPMgr->GetItem(vEntity[i].second.Type)->RenderType)
+		switch(gEPMgr->GetItem(entityData.type)->RenderType)
 		{
 		case SCENE_STATICMESH:
 			{
 				//Export Graphics
 				DD_StaticMeshData SMDtemp;
-				TranslateToStaticMesh(vEntity[i], SMDtemp);
+				TranslateToStaticMesh(entityData, SMDtemp);
 				staticMeshExport.push_back(SMDtemp);
 				//Export scripting
 				ScriptData SDtemp;
-				TranslateToScriptData(vEntity[i], SDtemp);
+				TranslateToScriptData(entityData, SDtemp);
 				scriptExport.push_back(SDtemp);
 				//Export picking
-				Pickingtemp.ID.push_back(vEntity[i].first);
-				Pickingtemp.Position.push_back(vEntity[i].second.Position);
-				Pickingtemp.Halfscale.push_back(gEPMgr->GetItem(vEntity[i].second.Type)->HalfScale);
+				Pickingtemp.ID.push_back(entityData.ID);
+				Pickingtemp.Position.push_back(entityData.position);
+				Pickingtemp.Halfscale.push_back(gEPMgr->GetItem(entityData.type)->HalfScale);
 				break;
 			}
 		}
 		//Export to Physics
-		if(vEntity[i].second.PhysicsID > -1)
+		if(entityData.physicsID > -1)
 		{
-			m_Physics.ApplyCentralForce(vEntity[i].second.PhysicsID, 
-				m_Physics.ConvertToBtVec(vEntity[i].second.Force));
+			m_Physics.ApplyCentralForce(entityData.physicsID, entityData.force);
 		}
-		//if(vEntity[i].second.Type == EP_SMALLMARBLE || vEntity[i].second.Type == EP_MEDIUMMARBLE ||
-		//	vEntity[i].second.Type == EP_LARGEMARBLE || vEntity[i].second.Type == EP_PLAYERMARBLE)
+		//if(entityData.Type == EP_SMALLMARBLE || entityData.Type == EP_MEDIUMMARBLE ||
+		//	entityData.Type == EP_LARGEMARBLE || entityData.Type == EP_PLAYERMARBLE)
 		{
 			DDGameData temp;
-			temp.ID = vEntity[i].first;
-			temp.Type = vEntity[i].second.Type;
-			temp.Position = vEntity[i].second.Position;
+			temp.ID = entityData.ID;
+			temp.Type = entityData.type;
+			temp.Position = entityData.position;
 			posExport.push_back(temp);
 		}
 
 		//Export to AI
-		if(vEntity[i].second.SteeringType &&
-			(vEntity[i].second.Type == EP_SMALLMARBLE || vEntity[i].second.Type == EP_MEDIUMMARBLE ||
-			vEntity[i].second.Type == EP_LARGEMARBLE))
+		if(entityData.steeringType &&
+			(entityData.type == EP_SMALLMARBLE || entityData.type == EP_MEDIUMMARBLE ||
+			entityData.type == EP_LARGEMARBLE))
 		{
 			DDSteeringData temp;
-			temp.ID = vEntity[i].first;
-			temp.m_dSpeed = D3DXVec3Length(&(vEntity[i].second.Velocity));
+			temp.ID = entityData.ID;
+			temp.m_dSpeed = D3DXVec3Length(&(entityData.velocity));
 			temp.m_iEvadeID = 0;
 			temp.m_iPursuitID = 0;
 			temp.SHeading = SVector3D(0, 0);
-			temp.SPosition = SVector3D(vEntity[i].second.Position.x, vEntity[i].second.Position.z);
-			temp.SteeringType = vEntity[i].second.SteeringType;
-			temp.SVelocity = SVector3D(vEntity[i].second.Velocity.x, vEntity[i].second.Velocity.z);
+			temp.SPosition = SVector3D(entityData.position.x, entityData.position.z);
+			temp.SteeringType = entityData.steeringType;
+			temp.SVelocity = SVector3D(entityData.velocity.x, entityData.velocity.z);
 
 			steerExport.push_back(temp);
 		}
-		if(vEntity[i].second.Type == EP_WALL || vEntity[i].second.Type == EP_BOX)
+		if(entityData.type == EP_WALL || entityData.type == EP_BOX)
 		{
 			SteeringObstacles temp;
-			temp.m_iID = vEntity[i].first;
-			temp.m_dRadius = gEPMgr->GetItem(vEntity[i].second.Type)->HalfScale.x;
+			temp.m_iID = entityData.ID;
+			temp.m_dRadius = gEPMgr->GetItem(entityData.type)->HalfScale.x;
 			temp.m_dScale = 1;
 			temp.m_dTagged = false;
-			temp.SPosition = SVector3D(vEntity[i].second.Position.x, vEntity[i].second.Position.z);
+			temp.SPosition = SVector3D(entityData.position.x, entityData.position.z);
 			obstacleExport.push_back(temp);
 		}
 	}
@@ -328,21 +365,16 @@ void EntityCore::Export()
 
 void EntityCore::PollPhysics()
 {
-	vector<pair<int, EntityData>> vEntity;
-	m_EntityMgr.GetCopy(vEntity);
-	for(int i = 0; i < vEntity.size(); ++i)
+	EntityList::iterator end = m_EntityMgr.End();
+	for (EntityList::iterator itr = m_EntityMgr.Begin(); itr != end; ++itr)
 	{
-		if(vEntity[i].second.PhysicsID > -1)
+		EntityData& entityData = *(itr);
+
+		if (entityData.physicsID > -1)
 		{
-			btVector3 temp;
-			D3DXVECTOR3 newtemp;
-			newtemp = m_Physics.convertToDxVec(m_Physics.GetShapePosition(vEntity[i].second.PhysicsID));
-			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_POSITION, newtemp);
-			newtemp = m_Physics.convertToDxVec(m_Physics.GetLinearVelocity(vEntity[i].second.PhysicsID));
-			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_VELOCITY, newtemp);
-			D3DXQUATERNION temprot;
-			temprot = m_Physics.ConvertToDxRot(m_Physics.GetShapeRotation(vEntity[i].second.PhysicsID));
-			m_EntityMgr.SetValue(&vEntity[i].first, EDTYPE_ROTATION, temprot);
+			entityData.position = m_Physics.GetPosition(entityData.physicsID);
+			entityData.velocity = m_Physics.GetLinearVelocity(entityData.physicsID);
+			entityData.rotation = m_Physics.GetRotation(entityData.physicsID);
 		}
 	}
 }
@@ -352,14 +384,14 @@ This function translates the entity into static mesh
 takes in and entity + id and DD_StaticMeshData, both reference
 outputs onto the second parameter
 */
-void EntityCore::TranslateToStaticMesh(std::pair<int,EntityData> &entity, DD_StaticMeshData &out)
+void EntityCore::TranslateToStaticMesh(EntityData &entity, DD_StaticMeshData &out)
 {
-	out.MeshID = gEPMgr->GetItem(entity.second.Type)->GResourceID;
+	out.MeshID = gEPMgr->GetItem(entity.type)->GResourceID;
 	out.TextureID = 0;
 	D3DXMATRIX m;
 	D3DXMatrixTransformation(&m, &D3DXVECTOR3(0,0,0), 0, 
-		&(gEPMgr->GetItem(entity.second.Type)->GraphicsScale), &D3DXVECTOR3(0,0,0), 
-		&(entity.second.Rotation), &(entity.second.Position));
+		&(gEPMgr->GetItem(entity.type)->GraphicsScale), &D3DXVECTOR3(0,0,0), 
+		&(entity.rotation), &(entity.position));
 	out.Transform = m;
 }
 
@@ -368,11 +400,11 @@ This function translates the entity into scripting data
 takes in an entity + id and ScriptData, both reference as inputs
 outputs onto the second parameter
 */
-void EntityCore::TranslateToScriptData(std::pair<int,EntityData> &entity, ScriptData &out)
+void EntityCore::TranslateToScriptData(EntityData &entity, ScriptData &out)
 {
-	out.objID = entity.first;
-	out.objType = gEPMgr->GetItem(entity.second.Type)->ScriptName;
-	out.LMouseClick = entity.second.ScriptFlag1;
-	out.RMouseClick = entity.second.ScriptFlag2;
+	out.objID = entity.ID;
+	out.objType = gEPMgr->GetItem(entity.type)->ScriptName;
+	out.LMouseClick = entity.scriptFlag1;
+	out.RMouseClick = entity.scriptFlag2;
 	out.Collision = 0;
 }

@@ -1,37 +1,12 @@
 #include "Physics.h"
 
-PhysicsWorld* gPhysics = 0;
+//Heavily Edited done by - TP
+
+PhysicsWorld* gp_physics = 0;
+
+
 PhysicsWorld::PhysicsWorld(){
-	mNumOfObjects=-1;
-}
-
-
-void PhysicsWorld::CreateWorld(WorldInfo& WldInfo)
-{
-	///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
-	collisionConfiguration = new btDefaultCollisionConfiguration();
-
-	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
-	dispatcher = new	btCollisionDispatcher(collisionConfiguration);
-
-	///the maximum size of the collision world. Make sure objects stay within these boundaries
-	///Don't make the world AABB size too large, it will harm simulation quality and performance
-	btVector3 worldAabbMin=WldInfo.WorldAabbMin;
-	btVector3 worldAabbMax=WldInfo.WorldAabbMax;
-	int	maxProxies = 1024;
-	
-	overlappingPairCache = new btAxisSweep3(worldAabbMin,worldAabbMax,maxProxies);
-
-	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-	solver = new btSequentialImpulseConstraintSolver;
-
-	dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,overlappingPairCache,solver,collisionConfiguration);
-
-	dynamicsWorld->setGravity(WldInfo.Gravity);
-
-	//keep track of the shapes, we release memory at exit.
-	//make sure to re-use collision shapes among rigid bodies whenever possible!
-	btAlignedObjectArray<btCollisionShape*> collisionShapes;
+	numOfObjects=-1;
 }
 
 PhysicsWorld::~PhysicsWorld()
@@ -40,423 +15,469 @@ PhysicsWorld::~PhysicsWorld()
 
 	//remove the rigidbodies from the dynamics world and delete them
 	//for (int i=dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
-		for (int i=dynamicsWorld->getNumCollisionObjects()-1; i>=0 ;i--)
+	for (int i = p_dynamicsWorld->getNumCollisionObjects() - 1; i >= 0; i--)
 	{
-		btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[i];
-		btRigidBody* body = btRigidBody::upcast(obj);
-		if (body && body->getMotionState())
+		btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[i];
+		btRigidBody* p_body = btRigidBody::upcast(p_obj);
+		if (p_body && p_body->getMotionState())
 		{
-			delete body->getMotionState();
+			delete p_body->getMotionState();
 		}
-		dynamicsWorld->removeCollisionObject( obj );
-		delete obj;
+		p_dynamicsWorld->removeCollisionObject(p_obj);
+		delete p_obj;
 	}
 
 	//delete collision shapes
-	for (int j=0;j<collisionShapes.size();j++)
+	for (int j = 0; j<p_collisionShapes.size(); j++)
 	{
-		btCollisionShape* shape = collisionShapes[j];
-		collisionShapes[j] = 0;
-		delete shape;
+		btCollisionShape* p_shape = p_collisionShapes[j];
+		p_collisionShapes[j] = 0;
+		delete p_shape;
 	}
 
 	//delete dynamics world
-	delete dynamicsWorld;
+	delete p_dynamicsWorld;
 
 	//delete solver
-	delete solver;
+	delete p_solver;
 
 	//delete broadphase
-	delete overlappingPairCache;
+	delete p_overlappingPairCache;
 
 	//delete dispatcher
-	delete dispatcher;
+	delete p_dispatcher;
 
-	delete collisionConfiguration;
+	delete p_collisionConfiguration;
 
 	//next line is optional: it will be cleared by the destructor when the array goes out of scope
-	collisionShapes.clear();
+	p_collisionShapes.clear();
 
 }
-D3DXQUATERNION PhysicsWorld::ConvertToDxRot(btVector3 &oldRot)
-{
-	D3DXQUATERNION tempQuat(oldRot.x(),oldRot.y(),oldRot.z(),oldRot.w());
 
-	//D3DXMATRIX tempMatrix;
-	//D3DXMatrixRotationQuaternion(&tempMatrix,&tempQuat);
-	//return tempMatrix;
-	return tempQuat;
-}
-void PhysicsWorld::wipePhysics()
+
+
+
+void PhysicsWorld::CreateWorld(WorldInfo& WldInfo)
 {
-	for (int i=7; i<=dynamicsWorld->getNumCollisionObjects()-1 ;i++)
+	///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
+	p_collisionConfiguration = new btDefaultCollisionConfiguration();
+
+	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
+	p_dispatcher = new	btCollisionDispatcher(p_collisionConfiguration);
+
+	///the maximum size of the collision world. Make sure objects stay within these boundaries
+	///Don't make the world AABB size too large, it will harm simulation quality and performance
+	btVector3 worldAabbMin=WldInfo.WorldAabbMin;
+	btVector3 worldAabbMax=WldInfo.WorldAabbMax;
+	int	maxProxies = 1024;
+	
+	p_overlappingPairCache = new btAxisSweep3(worldAabbMin,worldAabbMax,maxProxies);
+
+	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
+	p_solver = new btSequentialImpulseConstraintSolver;
+
+	p_dynamicsWorld = new btDiscreteDynamicsWorld(p_dispatcher,p_overlappingPairCache,p_solver,p_collisionConfiguration);
+
+	p_dynamicsWorld->setGravity(WldInfo.Gravity);
+
+	//keep track of the shapes, we release memory at exit.
+	//make sure to re-use collision shapes among rigid bodies whenever possible!
+	btAlignedObjectArray<btCollisionShape*> collisionShapes;
+}
+
+void PhysicsWorld::ClearPhysics()
+{
+	for (int i = 7; i <= p_dynamicsWorld->getNumCollisionObjects() - 1; i++)
 	{
-		btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[i];
-		btRigidBody* body = btRigidBody::upcast(obj);
+		btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[i];
+		btRigidBody* body = btRigidBody::upcast(p_obj);
 		if (body && body->getMotionState())
 		{
 			delete body->getMotionState();
 		}
-		dynamicsWorld->removeCollisionObject( obj );
-		delete obj;
+		p_dynamicsWorld->removeCollisionObject(p_obj);
+		delete p_obj;
 	}
 
 
 }
 
-void PhysicsWorld::setPhysics()
+
+
+
+void PhysicsWorld::UpdateWorld(btScalar timeStep, int maxSubSteps)
 {
+	p_dynamicsWorld->stepSimulation(timeStep, maxSubSteps);
 }
 
-void PhysicsWorld::displayCallback()
+
+
+
+void PhysicsWorld::DisplayCallback()
 {
 	//if (dynamicsWorld)
 	//	dynamicsWorld->performDiscreteCollisionDetection();
-	
+
 	int i;
 
 	///one way to draw all the contact points is iterating over contact manifolds / points:
 
-	int numManifolds = dynamicsWorld->getDispatcher()->getNumManifolds();
-	for (i=0;i<numManifolds;i++)
+	int numManifolds = p_dynamicsWorld->getDispatcher()->getNumManifolds();
+	for (i = 0; i<numManifolds; i++)
 	{
-		btPersistentManifold* contactManifold = dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
-		btCollisionObject* obA = static_cast<btCollisionObject*>(contactManifold->getBody0());
-		btCollisionObject* obB = static_cast<btCollisionObject*>(contactManifold->getBody1());
-	
-		int numContacts = contactManifold->getNumContacts();
-			for (int j=0;j<numContacts;j++)
+		btPersistentManifold* p_contactManifold = p_dynamicsWorld->getDispatcher()->getManifoldByIndexInternal(i);
+		btCollisionObject* p_obA = static_cast<btCollisionObject*>(p_contactManifold->getBody0());
+		btCollisionObject* p_obB = static_cast<btCollisionObject*>(p_contactManifold->getBody1());
+
+		int numContacts = p_contactManifold->getNumContacts();
+		for (int j = 0; j<numContacts; j++)
 		{
-			btManifoldPoint& pt = contactManifold->getContactPoint(j);
-	
+			btManifoldPoint& pt = p_contactManifold->getContactPoint(j);
+
 		}
 	}
 }
 
-void PhysicsWorld::UpdateWorld(btScalar timeStep, int maxSubSteps)
+
+
+int PhysicsWorld::CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position)
 {
-	dynamicsWorld->stepSimulation(timeStep,maxSubSteps);
-}
+	btCollisionShape* p_colShape;
+	switch (pMat.type)
+	{
+		case COLLIDER_PLANE:
+		{
+			break;
+		}
+		case COLLIDER_BOX:
+		{
+			BoxPMat& boxPMat = (BoxPMat&)pMat;
+			btVector3 size(ConvertToBtVec(boxPMat.scalar));
 
-btVector3 PhysicsWorld::GetShapePosition(int id)
-{
-	btVector3 pos;
+			p_colShape = new btBoxShape(size);
+			break;
+		}
+		case COLLIDER_SPHERE:
+		{
+			SpherePMat& sphPMat = (SpherePMat&)pMat;
 
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-			btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
-			{
-				btTransform trans;
-				body->getMotionState()->getWorldTransform(trans);
-				
-				pos = btVector3(float(trans.getOrigin().getX()),
-					float(trans.getOrigin().getY()), float(trans.getOrigin().getZ()));
-			}
-	return pos;
+			p_colShape = new btSphereShape(btScalar(sphPMat.radius));
+			break;
+		}
+		case COLLIDER_CYLINDER:
+		{
+			CylinderPMat& cylPMat = (CylinderPMat&)pMat;
+			btVector3 size(cylPMat.radius * cylPMat.scalar.x, cylPMat.length * cylPMat.scalar.y, cylPMat.radius * cylPMat.scalar.z);
 
-}
+			p_colShape = new btCylinderShape(size);
+			break;
+		}
+		case COLLIDER_CAPSULE:
+		{
 
-btVector3 PhysicsWorld::GetShapeRotation(int id)
-{
-	btVector3 rot;
+			break;
+		}
+	default:
+		return numOfObjects;
+	}
+	p_collisionShapes.push_back(p_colShape);
 
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-			btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
-			{
-				btTransform trans;
-				body->getMotionState()->getWorldTransform(trans);
-				
-				rot = btVector3(float(trans.getRotation().getX()),
-					float(trans.getRotation().getY()), float(trans.getRotation().getZ()));
-				rot.setW(float(trans.getRotation().getW()));
-			}
-			
-	return rot;
-}
+	btTransform startTransform;
+	startTransform.setIdentity();
 
-void PhysicsWorld::SetShapePosition(int id, btVector3& position)
-{
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-	btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
-			{
-				btTransform trans;
-				body->getMotionState()->getWorldTransform(trans);
-				trans.setOrigin(position);
-				body->getMotionState()->setWorldTransform(trans);
-			}
-			else// I dont think we will be useing this..but might as well have it just in case.
-			{
-				dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setOrigin(position);
-			}
-}
-void PhysicsWorld::SetShapeRotation(int id, btVector3& axis,float degree)
-{
-	degree=(3.14159265/180)*degree;
-	btQuaternion rot(btVector3(axis.getX(),axis.getY(),axis.getZ()),degree);
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-	btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
-			{
-				btTransform trans;
-				body->getMotionState()->getWorldTransform(trans);
-				trans.setRotation(rot);
-				body->getMotionState()->setWorldTransform(trans);
-			}
-			else// I dont think we will be useing this..but might as well have it just in case.
-			{
-				dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setRotation(rot);
-			}
-}
-void PhysicsWorld::SetShapeRotation(int id,btQuaternion& quat )
-{
+	btScalar mass = pMat.mass;
 
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-	btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
-			{
-				btTransform trans;
-				body->getMotionState()->getWorldTransform(trans);
-				trans.setRotation(quat);
-				body->getMotionState()->setWorldTransform(trans);
-			}
-			else// I dont think we will be useing this..but might as well have it just in case.
-			{
-				dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setRotation(quat);
-			}
-}
-void PhysicsWorld::RotateShapeOnX(int id, float degree)
-{
-	btVector3 vec;
-	vec=GetShapeRotation(id);
-	btQuaternion q1(vec.getX(),vec.getY(),vec.getZ(),vec.w());
+	//rigidbody is dynamic if and only if mass is non zero, otherwise static
+	bool isDynamic = (mass != 0.f);
 
-	vec.setValue(-20,0,0);
-	btQuaternion q2(vec,degree*(3.14159265/180));
-	btQuaternion q3;
-	q3=q2*q1;
+	btVector3 inertiaTensor = ConvertToBtVec(pMat.inertiaTensor);
+	if (isDynamic)
+		p_colShape->calculateLocalInertia(mass, inertiaTensor);
 
-	SetShapeRotation(id,q3);
-}
-void PhysicsWorld::RotateShapeOnY(int id, float degree)
-{
-	btVector3 vec;
-	vec=GetShapeRotation(id);
-	btQuaternion q1(vec.getX(),vec.getY(),vec.getZ(),vec.w());
+	startTransform.setOrigin(ConvertToBtVec(position));
 
-	vec.setValue(0,-20,0);
-	btQuaternion q2(vec,degree*(3.14159265/180));
-	btQuaternion q3;
-	q3=q2*q1;
-
-	SetShapeRotation(id,q3);
-}
-void PhysicsWorld::RotateShapeOnZ(int id, float degree)
-{
-	btVector3 vec;
-	vec=GetShapeRotation(id);
-	btQuaternion q1(vec.getX(),vec.getY(),vec.getZ(),vec.w());
-
-	vec.setValue(0,0,-20);
-	btQuaternion q2(vec,degree*(3.14159265/180));
-	btQuaternion q3;
-	q3=q2*q1;
-
-	SetShapeRotation(id,q3);
-}
-
-int PhysicsWorld::CreateCollisionBox(BoxInfo& info)
-{
-	// Creates a Box Object.
+	//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
+	btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, p_colShape, inertiaTensor);
 	
-	btCollisionShape* colShape = new btBoxShape(info.halfscale);
-		collisionShapes.push_back(colShape);
+	rbInfo.m_friction = pMat.friction;
+	rbInfo.m_restitution = pMat.restitution;
+	rbInfo.m_linearDamping = pMat.linearDamping;
+	rbInfo.m_angularDamping = pMat.angularDamping;
+	btRigidBody* p_body = new btRigidBody(rbInfo);
 
-		btTransform startTransform;
-		startTransform.setIdentity();
+	p_dynamicsWorld->addRigidBody(p_body);
 
-		btScalar	mass=info.mass;
-
-			//rigidbody is dynamic if and only if mass is non zero, otherwise static
-		bool isDynamic = (mass != 0.f);
-
-		btVector3 localInertia=info.localInertia;
-		if (isDynamic)
-			colShape->calculateLocalInertia(mass,localInertia);
-
-			startTransform.setOrigin(info.orgin);
-		
-			//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape,localInertia);
-			btRigidBody* body = new btRigidBody(rbInfo);
-
-			rbInfo.m_friction=info.friction;
-			rbInfo.m_restitution=info.restitution;
-			rbInfo.m_linearDamping=info.linearDamping;
-			rbInfo.m_angularDamping=info.angularDamping;
-
-			dynamicsWorld->addRigidBody(body);
-
-			mNumOfObjects++;
-			return mNumOfObjects;
-		
-}
-
-int PhysicsWorld::CreateCollisionCylinder(BoxInfo& info)
-{
-	// Creates a Box Object.
-	
-	btCollisionShape* colShape = new btCylinderShape(info.halfscale);
-		collisionShapes.push_back(colShape);
-
-		btTransform startTransform;
-		startTransform.setIdentity();
-
-		btScalar	mass=info.mass;
-
-			//rigidbody is dynamic if and only if mass is non zero, otherwise static
-		bool isDynamic = (mass != 0.f);
-
-		btVector3 localInertia=info.localInertia;
-		if (isDynamic)
-			colShape->calculateLocalInertia(mass,localInertia);
-
-			startTransform.setOrigin(info.orgin);
-		
-			//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape,localInertia);
-			btRigidBody* body = new btRigidBody(rbInfo);
-
-			rbInfo.m_friction=info.friction;
-			rbInfo.m_restitution=info.restitution;
-			rbInfo.m_linearDamping=info.linearDamping;
-			rbInfo.m_angularDamping=info.angularDamping;
-
-			dynamicsWorld->addRigidBody(body);
-
-			mNumOfObjects++;
-			return mNumOfObjects;
-		
+	numOfObjects++;
+	return numOfObjects;
 }
 
 
 
-int PhysicsWorld::CreateCollisionSphere(SphereInfo& info)
-{
-	//create a dynamic rigidbody Sphere
-
-		btCollisionShape* colShape = new btSphereShape(btScalar(info.radius));
-		collisionShapes.push_back(colShape);
-
-		/// Create Dynamic Objects
-		btTransform startTransform;
-		startTransform.setIdentity();
-
-		btScalar	mass=info.mass;
-
-		//rigidbody is dynamic if and only if mass is non zero, otherwise static
-		bool isDynamic = (mass != 0.f);
-
-		btVector3 localInertia=info.localInertia;
-		if (isDynamic)
-			colShape->calculateLocalInertia(mass,localInertia);
-
-			startTransform.setOrigin(info.orgin);
-		
-			//using motionstate is recommended, it provides interpolation capabilities, and only synchronizes 'active' objects
-			btDefaultMotionState* myMotionState = new btDefaultMotionState(startTransform);
-			btRigidBody::btRigidBodyConstructionInfo rbInfo(mass,myMotionState,colShape,localInertia);
-			
-			rbInfo.m_friction=info.friction;
-			rbInfo.m_restitution=info.restitution;
-			rbInfo.m_linearDamping=info.linearDamping;
-			rbInfo.m_angularDamping=info.angularDamping;
-			btRigidBody* body = new btRigidBody(rbInfo);
-
-			dynamicsWorld->addRigidBody(body);
-			
-			mNumOfObjects++;
-			return mNumOfObjects;
-}
-
-void PhysicsWorld::SetAsKinematic(int id)
-{
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-			btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
-			{	
-				body->setCollisionFlags( body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
-				body->setActivationState(DISABLE_DEACTIVATION);
-			}
-}
-
-void PhysicsWorld::ApplyCentralForce(int id,btVector3& force)
-{
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-			btRigidBody* body = btRigidBody::upcast(obj);
-			if (body && body->getMotionState())
-			{	
-				body->applyCentralForce(force);
-			}
-}
 
 void PhysicsWorld::DeletePhysicsObject(int id)
 {
 	/// works like a deque...remove one and they push forward...i think
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-	dynamicsWorld->removeCollisionObject(obj);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	p_dynamicsWorld->removeCollisionObject(p_obj);
 }
 
-btVector3 PhysicsWorld::GetLinearVelocity(int id)
+
+
+
+bool PhysicsWorld::IsKinematic(int id)
 {
-	btVector3 vec(0,0,0);
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-	btRigidBody* body = btRigidBody::upcast(obj);
-	if (body && body->getMotionState())
-	{	
-		vec=body->getLinearVelocity();
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+
+	return p_body->isKinematicObject();
+}
+
+void PhysicsWorld::SetAsKinematic(int id)
+{
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		p_body->setCollisionFlags(p_body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+		p_body->setActivationState(DISABLE_DEACTIVATION);
+	}
+}
+
+
+
+
+D3DXVECTOR3 PhysicsWorld::GetPosition(int id)
+{
+	D3DXVECTOR3 pos;
+
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		btTransform trans;
+		p_body->getMotionState()->getWorldTransform(trans);
+
+		pos = ConvertToDxVec(trans.getOrigin());
+	}
+	return pos;
+
+}
+
+void PhysicsWorld::SetPosition(int id, D3DXVECTOR3& position)
+{
+	btVector3 btPosition = ConvertToBtVec(position);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		btTransform trans;
+		p_body->getMotionState()->getWorldTransform(trans);
+		trans.setOrigin(btPosition);
+		p_body->getMotionState()->setWorldTransform(trans);
+	}
+	else// I dont think we will be useing this..but might as well have it just in case.
+	{
+		p_dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setOrigin(btPosition);
+	}
+}
+
+
+
+
+D3DXVECTOR3 PhysicsWorld::GetLinearVelocity(int id)
+{
+	D3DXVECTOR3 vec;
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		vec = ConvertToDxVec(p_body->getLinearVelocity());
 	}
 	return vec;
 }
 
-void PhysicsWorld::SetLinearVelocity(int id, btVector3& vel)
+void PhysicsWorld::SetLinearVelocity(int id, D3DXVECTOR3& vel)
 {
-	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
-	btRigidBody* body = btRigidBody::upcast(obj);
-	if (body && body->getMotionState())
-	{	
-		body->setLinearVelocity(vel);
+	btVector3 btVel = ConvertToBtVec(vel);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		p_body->setLinearVelocity(btVel);
 	}
 }
 
-bool PhysicsWorld::IsKinematic(int id)
+
+
+
+void PhysicsWorld::ApplyCentralForce(int id, D3DXVECTOR3& force)
 {
+	btVector3 btForce = ConvertToBtVec(force);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		p_body->applyCentralForce(btForce);
+	}
+}
+
+
+
+
+D3DXQUATERNION PhysicsWorld::GetRotation(int id)
+{
+	return ConvertToDxRot(GetBtRotation(id));
+	/*
+	D3DXQUATERNION rot;
+
 	btCollisionObject* obj = dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* body = btRigidBody::upcast(obj);
-		
-		return body->isKinematicObject();
+	if (body && body->getMotionState())
+	{
+		btTransform trans;
+		body->getMotionState()->getWorldTransform(trans);
+
+		rot = convertToDxRot(trans.getRotation());
+	}
+
+	return rot;*/
+}
+
+btQuaternion PhysicsWorld::GetBtRotation(int id)
+{
+	btQuaternion rot;
+
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		btTransform trans;
+		p_body->getMotionState()->getWorldTransform(trans);
+
+		rot = trans.getRotation();
+	}
+
+	return rot;
+}
+
+void PhysicsWorld::SetRotation(int id, D3DXQUATERNION& quat)
+{
+	SetBtRotation(id, ConvertToBtQuat(quat));
+	/*
+	btQuaternion btQuat = convertToBtQuat(quat);
+	btCollisionObject* p_obj = dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		btTransform trans;
+		p_body->getMotionState()->getWorldTransform(trans);
+		trans.setRotation(btQuat);
+		p_body->getMotionState()->setWorldTransform(trans);
+	}
+	else// I dont think we will be useing this..but might as well have it just in case.
+	{
+		dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setRotation(btQuat);
+	}
+	*/
+}
+
+void PhysicsWorld::SetBtRotation(int id, btQuaternion& quat)
+{
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		btTransform trans;
+		p_body->getMotionState()->getWorldTransform(trans);
+		trans.setRotation(quat);
+		p_body->getMotionState()->setWorldTransform(trans);
+	}
+	else// I dont think we will be useing this..but might as well have it just in case.
+	{
+		p_dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setRotation(quat);
+	}
+}
+
+void PhysicsWorld::SetRotation(int id, D3DXVECTOR3& axis, float degree)
+{
+	degree = (3.14159265 / 180)*degree;
+	btQuaternion rot(btVector3(axis.x, axis.y, axis.z), degree);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		btTransform trans;
+		p_body->getMotionState()->getWorldTransform(trans);
+		trans.setRotation(rot);
+		p_body->getMotionState()->setWorldTransform(trans);
+	}
+	else// I dont think we will be useing this..but might as well have it just in case.
+	{
+		p_dynamicsWorld->getCollisionObjectArray()[0]->getWorldTransform().setRotation(rot);
+	}
+}
+
+void PhysicsWorld::RotateOnCoordAxis(int id, float degree, AxisID axis)
+{
+	btQuaternion q1 = GetBtRotation(id);
+	btVector3 vec;
+	switch (axis)
+	{
+	case X:
+		vec = btVector3(-20, 0, 0);
+		break;
+	case Y:
+		vec = btVector3(0, -20, 0);
+		break;
+	case Z:
+		vec = btVector3(0, 0, -20);
+		break;
+	}
+	btQuaternion q2(vec, degree*(3.14159265 / 180));
+	btQuaternion q3;
+	q3 = q2*q1;
+
+	SetBtRotation(id, q3);
 }
 
 
-btVector3 PhysicsWorld::ConvertToBtVec(D3DXVECTOR3& old)
+
+
+btVector3 PhysicsWorld::ConvertToBtVec(const D3DXVECTOR3& c_old)
 {
-	btVector3 newVec;
-	newVec.setValue(old.x,old.y,old.z);
+	btVector3 newVec(c_old.x, c_old.y, c_old.z);
+
+	return newVec;
+}
+
+D3DXVECTOR3 PhysicsWorld::ConvertToDxVec(const btVector3& c_old)
+{
+	D3DXVECTOR3 newVec(c_old.x(), c_old.y(), c_old.z());
 
 	return newVec;
 }
 
 
-D3DXVECTOR3 PhysicsWorld::convertToDxVec(btVector3& old)
+
+
+btQuaternion PhysicsWorld::ConvertToBtQuat(const D3DXQUATERNION& c_old)
 {
-	D3DXVECTOR3 newVec;
+	btQuaternion tempQuat(c_old.x, c_old.y, c_old.z, c_old.w);
 
-	newVec.x = old.getX();
-	newVec.y = old.getY();
-	newVec.z = old.getZ();
+	return tempQuat;
+}
 
-	return newVec;
+D3DXQUATERNION PhysicsWorld::ConvertToDxRot(const btQuaternion &c_old)
+{
+	D3DXQUATERNION tempQuat(c_old.x(), c_old.y(), c_old.z(), c_old.w());
+
+	return tempQuat;
+}
+
+
+
+
+void PhysicsWorld::SetPhysics()
+{
 }

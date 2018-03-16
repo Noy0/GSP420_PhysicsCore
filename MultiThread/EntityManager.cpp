@@ -1,51 +1,86 @@
 #include "EntityManager.h"
 #include "EntityPropertyManager.h"
 
+//Heavily Edited done by - TP
+
+
+EntityData::EntityData(): position(0, 0, 0), velocity(0, 0, 0), force(0, 0, 0), rotation(0, 0, 0, 1),
+						  physicsID(-1), steeringType(0), scriptFlag1(0), scriptFlag2(0) {}
+
+
+
+
+
 EntityManager::EntityManager()
 {
-	m_NextID = 0;
+	nextID = 0;
 }
 
 EntityManager::~EntityManager()
 {
+	entities.clear();
 }
 
-void EntityManager::Clear()
+
+
+EntityData* EntityManager::NewEntity()
 {
-	m_Items.clear();
+	EntityData temp;
+	temp.ID = nextID++;
+	entities.push_back(temp);
+	return &entities.back();
 }
 
-int EntityManager::AddItem(int type, int *id_OUT)
+void EntityManager::AddEntity(EntityData& entity)
 {
-	pair<int, EntityData> newitem;
-	newitem.second.Type = type;
-	newitem.first = m_NextID;
-	if(id_OUT != 0)
-		*id_OUT = m_NextID;
-	m_Items.push_back(newitem);
-	return m_NextID++;
+	entities.push_back(entity);
 }
 
-bool EntityManager::RemoveItem(int id)
+bool EntityManager::RemoveEntity(int id)
 {
-	for(int i = 0 ;i < m_Items.size(); ++i)
+	for(EntityIterator itr = entities.begin(); itr != entities.end(); ++itr)
 	{
-		if(m_Items[i].first == id)
+		if(itr->ID == id)
 		{
-			m_Items.erase(m_Items.begin() + i);
+			itr = entities.erase(itr);
 			return true;
 		}
 	}
 	return false;
 }
 
-void EntityManager::SetValue(int *id, int type, void *value)
+void EntityManager::Clear()
 {
-	for(int i = 0; i < m_Items.size(); ++i)
+	entities.clear();
+}
+
+
+
+EntityData* EntityManager::GetEntity(int id)
+{
+	for (EntityIterator itr = entities.begin(); itr != entities.end(); ++itr)
 	{
-		if(m_Items[i].first == *id)
+		if (itr->ID == id)
 		{
-			m_Items[i].second.SetData(type, value);
+			return &(*itr);
 		}
 	}
+	return nullptr;
+}
+
+
+
+void EntityManager::CloneInto(EntityList& entityList)
+{
+	entityList = entities;
+}
+
+EntityIterator EntityManager::Begin()
+{
+	return entities.begin();
+}
+
+EntityIterator EntityManager::End()
+{
+	return entities.end();
 }

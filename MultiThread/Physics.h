@@ -5,76 +5,82 @@
 #include "Util.h"
 #include <d3d9.h>
 #include <d3dx9.h>
+#include "PhysicsMat.h"
 //#include <stdio.h>
+
+//Heavily Edited done by - TP
+
+enum AxisID
+{
+	X,
+	Y,
+	Z
+};
 
 class PhysicsWorld
 {
 private:
 	///collision configuration contains default setup for memory, collision setup. Advanced users can create their own configuration.
-	btDefaultCollisionConfiguration* collisionConfiguration;
+	btDefaultCollisionConfiguration* p_collisionConfiguration;
 
 	///use the default collision dispatcher. For parallel processing you can use a diffent dispatcher (see Extras/BulletMultiThreaded)
-	btCollisionDispatcher* dispatcher;
+	btCollisionDispatcher* p_dispatcher;
 
-	btAxisSweep3* overlappingPairCache;
+	btAxisSweep3* p_overlappingPairCache;
 
 	///the default constraint solver. For parallel processing you can use a different solver (see Extras/BulletMultiThreaded)
-	btSequentialImpulseConstraintSolver* solver;
+	btSequentialImpulseConstraintSolver* p_solver;
 
-	btDiscreteDynamicsWorld* dynamicsWorld;
+	btDiscreteDynamicsWorld* p_dynamicsWorld;
 
-	btAlignedObjectArray<btCollisionShape*> collisionShapes;
+	btAlignedObjectArray<btCollisionShape*> p_collisionShapes;
 
-	int mNumOfObjects;
+	int numOfObjects;
 
 public:
-	//Kinematic funtions
-	void displayCallback();	
-	bool IsKinematic(int id);
-	void SetShapePosition(int id, btVector3& position);
-	void SetShapeRotation(int id,btQuaternion& quat );
-	void SetShapeRotation(int id, btVector3& axis,float degree);
-	void RotateShapeOnX(int id, float degree);
-	void RotateShapeOnY(int id, float degree);
-	void RotateShapeOnZ(int id, float degree);
-	void wipePhysics();
-	void setPhysics();
-
-	//Create sphere
-	int CreateCollisionSphere(SphereInfo& info);
-	//Create box
-	int CreateCollisionBox(BoxInfo& info);
-	//create cylinder using box info
-	int PhysicsWorld::CreateCollisionCylinder(BoxInfo& info);
-
-	//dynamic functions
-
-	void SetAsKinematic(int id);
-	void ApplyCentralForce(int id,btVector3& force);
-
-	btVector3 GetShapePosition(int id);
-	btVector3 GetShapeRotation(int id);
-
-	void CreateWorld(WorldInfo& WldInfo);
-	void UpdateWorld(btScalar timeStep=(1/60), int maxSubSteps=1);
 	PhysicsWorld();
 	~PhysicsWorld();
 
-	btVector3 ConvertToBtVec(D3DXVECTOR3& old);
-	D3DXVECTOR3 convertToDxVec(btVector3& old);
+	void CreateWorld(WorldInfo& WldInfo);
+	void ClearPhysics();
 
-	D3DXQUATERNION ConvertToDxRot(btVector3& oldRot);
+	void UpdateWorld(btScalar timeStep = (1 / 60), int maxSubSteps = 1);
 
+	void DisplayCallback();
 
-	btVector3 GetLinearVelocity(int id);
-	void SetLinearVelocity(int id, btVector3& vel);
+	int CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position);
 
-	void PhysicsWorld::DeletePhysicsObject(int id);
+	void DeletePhysicsObject(int id);
+
+	bool IsKinematic(int id);
+	void SetAsKinematic(int id);
+
+	D3DXVECTOR3 GetPosition(int id);
+	void SetPosition(int id, D3DXVECTOR3& position);
+
+	D3DXVECTOR3 GetLinearVelocity(int id);
+	void SetLinearVelocity(int id, D3DXVECTOR3& vel);
+
+	void ApplyCentralForce(int id, D3DXVECTOR3& force);
 	
+	D3DXQUATERNION GetRotation(int id);
+	void SetRotation(int id, D3DXQUATERNION& quat);
+	void SetRotation(int id, D3DXVECTOR3& axis,float degree);
+	void RotateOnCoordAxis(int id, float angle, AxisID axis);
 
+	btVector3 ConvertToBtVec(const D3DXVECTOR3& old);
+	D3DXVECTOR3 ConvertToDxVec(const btVector3& old);
 
+	btQuaternion ConvertToBtQuat(const D3DXQUATERNION& old);
+	D3DXQUATERNION ConvertToDxRot(const btQuaternion& old);
+
+	void SetPhysics();
+
+private:
+	btQuaternion GetBtRotation(int id);
+	void SetBtRotation(int id, btQuaternion& quat);
 };
 
-extern PhysicsWorld* gPhysics;
+extern PhysicsWorld* gp_physics;
 
 #endif
