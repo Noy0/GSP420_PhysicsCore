@@ -3,7 +3,8 @@
 
 //structs based on UML diagram, to be fed into EntityData class - DN
 
-#include "btBulletDynamicsCommon.h"
+#include "btBulletDynamicsCommon.h" //changed btVector3 to directX XMFLOAT3, leaving the include for now in case we revert
+#include "directXmath.h"
 struct PhysicsMat
 {
 	int type;
@@ -12,18 +13,19 @@ struct PhysicsMat
 	float restitution;
 	float linearDamping;
 	float angularDamping;
-	btVector3 inertialTensor; //assuming using bt library, so sticking with bt types -DN
-	btVector3 origin;
+	DirectX::XMFLOAT3 inertialTensor; 
+	// to load floats into direct X vector:    DirectX::XMVECTOR inertialTensor = DirectX::XMLoadFloat3(&inertialTensor);
+	DirectX::XMFLOAT3 origin;
 };
 
 struct PlanePMat :PhysicsMat
 {
-	btVector4 pNormal;
+	DirectX::XMFLOAT4 pNormal;
 };
 
 struct BoxPMat :PhysicsMat
 {
-	btVector3 scalar;
+	DirectX::XMFLOAT3 scalar;
 };
 
 struct SpherePMat :PhysicsMat
