@@ -159,6 +159,7 @@ void ResourceLoader::Load()
 		epd.Friction = 4.0f;
 		epd.Restitution = 0;
 		epd.Radius = 1;
+		epd.Length = 1;
 		epd.GraphicsScale = D3DXVECTOR3(45.0f, 2.0f, 45.0f);
 		epd.RenderType = SCENE_STATICMESH;
 		epd.GResourceID = STATICMESH_CYLINDER;

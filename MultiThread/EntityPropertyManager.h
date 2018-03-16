@@ -20,6 +20,7 @@ struct EntityPropertyData
 	float Restitution;
 	float Mass;
 	float Radius;
+	float Length;
 	float AngularDampen;
 	D3DXVECTOR3 HalfScale;
 

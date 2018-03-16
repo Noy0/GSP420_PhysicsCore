@@ -75,7 +75,7 @@ void EntityCore::EntityMgrMsg()
 						pMat.friction = p_newEPD->Friction;
 						pMat.restitution = p_newEPD->Restitution;
 						pMat.mass = p_newEPD->Mass;
-						//pMat.pNormal = p_newEPD->;
+						pMat.pNormal = D3DXVECTOR4(p_newEPD->HalfScale, p_newEPD->Length);
 						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
 						p_entity->physicsID = pID;
 						if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
@@ -119,8 +119,8 @@ void EntityCore::EntityMgrMsg()
 						pMat.restitution = p_newEPD->Restitution;
 						pMat.mass = p_newEPD->Mass;
 						pMat.scalar = p_newEPD->HalfScale;
-						//pMat.radius = p_newEPD->;
-						//pMat.length = p_newEPD->;
+						pMat.radius = p_newEPD->Radius;
+						pMat.length = p_newEPD->Length;
 						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
 						p_entity->physicsID = pID;
 						if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
@@ -135,8 +135,8 @@ void EntityCore::EntityMgrMsg()
 						pMat.restitution = p_newEPD->Restitution;
 						pMat.mass = p_newEPD->Mass;
 						pMat.scalar = p_newEPD->HalfScale;
-						//pMat.radius = p_newEPD->;
-						//pMat.length = p_newEPD->;
+						pMat.radius = p_newEPD->Radius;
+						pMat.length = p_newEPD->Length;
 						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
 						p_entity->physicsID = pID;
 						if(p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
