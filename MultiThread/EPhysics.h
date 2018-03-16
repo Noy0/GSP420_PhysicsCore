@@ -1,7 +1,9 @@
 #ifndef _EPHYSICS_H
 #define _EPHYSICS_H
 
-enum EBodyType
+//Editing done by - TP
+
+enum TypeCollider
 {
 	BODYTYPE_NULL,
 	BODYTYPE_SPHERE,
@@ -13,7 +15,7 @@ enum EBodyType
 	//END ADDITION
 };
 
-enum EPhysicsType
+enum TypePhysics
 {
 	PHYSICSTYPE_NULL, 
 	//ADDED FOR GSP420-DN

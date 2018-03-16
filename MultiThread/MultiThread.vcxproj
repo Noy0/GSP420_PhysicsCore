@@ -162,7 +162,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Picking.h" />
     <ClInclude Include="ScriptingCore\ScriptingEngine\Debugger\Debug.h" />
-    <ClInclude Include="StructPhysics.h" />
+    <ClInclude Include="PhysicsMat.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="UICore.h" />
     <ClInclude Include="UIManager.h" />

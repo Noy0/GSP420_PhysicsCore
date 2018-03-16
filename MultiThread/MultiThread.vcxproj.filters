@@ -611,7 +611,7 @@
     <ClInclude Include="ScriptingCore\ScriptingEngine\Debugger\Debug.h">
       <Filter>Header Files\Cores\Scripting\Scripting Engine\Debugger</Filter>
     </ClInclude>
-    <ClInclude Include="StructPhysics.h">
+    <ClInclude Include="PhysicsMat.h">
       <Filter>Header Files\Cores\Entity/Physics</Filter>
     </ClInclude>
   </ItemGroup>
