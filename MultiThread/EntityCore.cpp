@@ -5,7 +5,6 @@
 #include "GraphicsMessage.h"
 #include "ScriptingCore\ScriptMessages.h"
 #include "CoreManager.h"
-//#include "Util.h"
 #include "PhysicsMat.h"
 #include "EPhysics.h"
 #include "UIMessage.h"

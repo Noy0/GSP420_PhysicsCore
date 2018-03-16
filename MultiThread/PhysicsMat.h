@@ -1,7 +1,7 @@
 #ifndef _PHYSICSMAT_H
 #define _PHYSICSMAT_H
 
-//structs based on UML diagram, to be fed into EntityData class - DN, TP
+//allows definition of common behavior states, for entities in the physics world - DN, TP   (replaces old inferior version)
 
 #include "EPhysics.h"
 #include <d3dx9.h>

@@ -1,7 +1,7 @@
 #include "EntityManager.h"
 #include "EntityPropertyManager.h"
 
-//Heavily Edited done by - TP
+//Heavily Edited done by - TP  (to fix seriously crappy implemntation of a list manager)
 
 
 EntityData::EntityData(): position(0, 0, 0), velocity(0, 0, 0), force(0, 0, 0), rotation(0, 0, 0, 1),

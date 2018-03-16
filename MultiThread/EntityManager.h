@@ -5,7 +5,7 @@
 #include <d3dx9.h>
 #include <List>
 
-//Heavily Edited done by - TP
+//Heavily Edited done by - TP  (to fix seriously crappy implemntation of a list manager)
 
 struct EntityData
 {
