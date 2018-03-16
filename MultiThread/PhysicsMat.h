@@ -41,7 +41,7 @@ struct SpherePMat :PhysicsMat
 struct CapsulePMat :PhysicsMat
 {
 	CapsulePMat() : PhysicsMat(), scalar(1.0, 1.0, 1.0), radius(1), length(1) { type = COLLIDER_CAPSULE; }
-	D3DXVECTOR3 scalar;//used to deform model
+	D3DXVECTOR3 scalar;//used to deform model - currently not implemented
 	float radius;
 	float length;
 };

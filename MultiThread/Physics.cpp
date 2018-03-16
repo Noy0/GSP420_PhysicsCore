@@ -147,6 +147,10 @@ int PhysicsWorld::CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position)
 	{
 		case COLLIDER_PLANE:
 		{
+			PlanePMat& plaPMat = (PlanePMat&)pMat;
+			D3DXVECTOR4 normal = plaPMat.pNormal;
+
+			p_colShape = new btStaticPlaneShape(btVector3(normal.x, normal.y, normal.z), normal.w);// TODO figure out how to include non-static version
 			break;
 		}
 		case COLLIDER_BOX:
@@ -161,7 +165,7 @@ int PhysicsWorld::CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position)
 		{
 			SpherePMat& sphPMat = (SpherePMat&)pMat;
 
-			p_colShape = new btSphereShape(btScalar(sphPMat.radius));
+			p_colShape = new btSphereShape(sphPMat.radius);
 			break;
 		}
 		case COLLIDER_CYLINDER:
@@ -174,7 +178,9 @@ int PhysicsWorld::CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position)
 		}
 		case COLLIDER_CAPSULE:
 		{
+			CapsulePMat& capPMat = (CapsulePMat&)pMat;
 
+			p_colShape = new btCapsuleShape(capPMat.radius, capPMat.length);
 			break;
 		}
 	default:
