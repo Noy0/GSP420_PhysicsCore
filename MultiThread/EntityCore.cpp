@@ -5,7 +5,6 @@
 #include "GraphicsMessage.h"
 #include "ScriptingCore\ScriptMessages.h"
 #include "CoreManager.h"
-//#include "Util.h"
 #include "PhysicsMat.h"
 #include "EPhysics.h"
 #include "UIMessage.h"
@@ -70,6 +69,34 @@ void EntityCore::EntityMgrMsg()
 				//Add object to physics
 				switch(p_newEPD->BodyType)
 				{
+				case COLLIDER_PLANE:
+					{
+						PlanePMat pMat;
+						pMat.friction = p_newEPD->Friction;
+						pMat.restitution = p_newEPD->Restitution;
+						pMat.mass = p_newEPD->Mass;
+						//pMat.pNormal = p_newEPD->;
+						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
+						p_entity->physicsID = pID;
+						if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
+							m_Physics.SetAsKinematic(pID);
+
+						break;
+					}
+				case COLLIDER_BOX:
+					{
+						BoxPMat pMat;
+						pMat.friction = p_newEPD->Friction;
+						pMat.restitution = p_newEPD->Restitution;
+						pMat.mass = p_newEPD->Mass;
+						pMat.scalar = p_newEPD->HalfScale;
+						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
+						p_entity->physicsID = pID;
+						if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
+							m_Physics.SetAsKinematic(pID);
+
+						break;
+					}
 				case COLLIDER_SPHERE:
 					{
 						SpherePMat pMat;
@@ -85,6 +112,22 @@ void EntityCore::EntityMgrMsg()
 
 						break;
 					}
+				case COLLIDER_CAPSULE:
+					{
+						CapsulePMat pMat;
+						pMat.friction = p_newEPD->Friction;
+						pMat.restitution = p_newEPD->Restitution;
+						pMat.mass = p_newEPD->Mass;
+						pMat.scalar = p_newEPD->HalfScale;
+						//pMat.radius = p_newEPD->;
+						//pMat.length = p_newEPD->;
+						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
+						p_entity->physicsID = pID;
+						if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
+							m_Physics.SetAsKinematic(pID);
+
+						break;
+					}
 				case COLLIDER_CYLINDER:
 					{
 						CylinderPMat pMat;
@@ -92,22 +135,8 @@ void EntityCore::EntityMgrMsg()
 						pMat.restitution = p_newEPD->Restitution;
 						pMat.mass = p_newEPD->Mass;
 						pMat.scalar = p_newEPD->HalfScale;
-						//radius
-						//length
-						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
-						p_entity->physicsID = pID;
-						if(p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
-							m_Physics.SetAsKinematic(pID);
-
-						break;
-					}
-				case COLLIDER_BOX:
-					{
-						BoxPMat pMat;
-						pMat.friction = p_newEPD->Friction;
-						pMat.restitution = p_newEPD->Restitution;
-						pMat.mass = p_newEPD->Mass;
-						pMat.scalar = p_newEPD->HalfScale;
+						//pMat.radius = p_newEPD->;
+						//pMat.length = p_newEPD->;
 						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
 						p_entity->physicsID = pID;
 						if(p_newEPD->PhysicsType == PHYSICS_KINEMATIC)

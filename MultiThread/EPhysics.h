@@ -1,16 +1,16 @@
 #ifndef _EPHYSICS_H
 #define _EPHYSICS_H
 
-//Editing done by - TP, DN
+//Editing done by - TP, DN   (to make it easier to understand, and allow new collider types)
 
 enum TypeCollider
 {
 	COLLIDER_NULL,
-	COLLIDER_SPHERE,
-	COLLIDER_CYLINDER,
+	COLLIDER_PLANE,
 	COLLIDER_BOX,
+	COLLIDER_SPHERE,
 	COLLIDER_CAPSULE,
-	COLLIDER_PLANE
+	COLLIDER_CYLINDER,
 };
 
 enum TypePhysics

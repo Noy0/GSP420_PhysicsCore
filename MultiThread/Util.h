@@ -3,7 +3,7 @@
 
 #include "btBulletDynamicsCommon.h"
 
-//Editing done by - TP
+//Editing done by - TP   (removed old inferior version of PhysicsMat)
 
 struct WorldInfo
 {

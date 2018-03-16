@@ -8,7 +8,7 @@
 #include "PhysicsMat.h"
 //#include <stdio.h>
 
-//Heavily Edited done by - TP
+//Heavily Edited done by - TP   (to fix poorly organized methods, bad use of conversions, and adding new features)
 
 enum AxisID
 {
