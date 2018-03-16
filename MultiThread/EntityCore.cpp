@@ -11,6 +11,8 @@
 #include "GameMessage.h"
 #include "AI_Message.h"
 
+//Editing done by - TP
+
 EntityCore::EntityCore()
 {
 	WorldInfo winfo;

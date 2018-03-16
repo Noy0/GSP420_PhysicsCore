@@ -1,6 +1,8 @@
 #include "EntityManager.h"
 #include "EntityPropertyManager.h"
 
+//Heavily Edited done by - TP
+
 
 EntityData::EntityData(): Position(0, 0, 0), Velocity(0, 0, 0), Force(0, 0, 0), Rotation(0, 0, 0, 1),
 						  PhysicsID(-1), SteeringType(0), ScriptFlag1(0), ScriptFlag2(0) {}
