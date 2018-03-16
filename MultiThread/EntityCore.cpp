@@ -5,11 +5,13 @@
 #include "GraphicsMessage.h"
 #include "ScriptingCore\ScriptMessages.h"
 #include "CoreManager.h"
-#include "Util.h"
+//#include "Util.h"
+#include "PhysicsMat.h"
 #include "EPhysics.h"
 #include "UIMessage.h"
 #include "GameMessage.h"
 #include "AI_Message.h"
+
 
 //Editing done by - TP
 
@@ -70,14 +72,13 @@ void EntityCore::EntityMgrMsg()
 				{
 				case BODYTYPE_SPHERE:
 					{
-						SphereInfo info;
-						info.orgin = m_Physics.convertToBtVec(msgx->Position);
-						info.friction = newEPD->Friction;
-						info.restitution = newEPD->Restitution;
-						info.mass = newEPD->Mass;
-						info.angularDamping = newEPD->AngularDampen;
-						info.radius = newEPD->Radius;
-						int pID = m_Physics.createCollision_Sphere(info);
+						SpherePMat pMat;
+						pMat.friction = newEPD->Friction;
+						pMat.restitution = newEPD->Restitution;
+						pMat.mass = newEPD->Mass;
+						pMat.angularDamping = newEPD->AngularDampen;
+						pMat.radius = newEPD->Radius;
+						int pID = m_Physics.createCollision_Sphere(pMat, msgx->Position);
 						entity->PhysicsID = pID;
 						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
 							m_Physics.setAsKinematic(pID);
@@ -86,13 +87,14 @@ void EntityCore::EntityMgrMsg()
 					}
 				case BODYTYPE_CYLINDER:
 					{
-						BoxInfo info;
-						info.orgin = m_Physics.convertToBtVec(msgx->Position);
-						info.friction = newEPD->Friction;
-						info.restitution = newEPD->Restitution;
-						info.mass = newEPD->Mass;
-						info.halfscale = m_Physics.convertToBtVec(newEPD->HalfScale);
-						int pID = m_Physics.createCollision_Cylinder(info);
+						CylinderPMat pMat;
+						pMat.friction = newEPD->Friction;
+						pMat.restitution = newEPD->Restitution;
+						pMat.mass = newEPD->Mass;
+						pMat.scalar = newEPD->HalfScale;
+						//radius
+						//length
+						int pID = m_Physics.createCollision_Cylinder(pMat, msgx->Position);
 						entity->PhysicsID = pID;
 						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
 							m_Physics.setAsKinematic(pID);
@@ -101,13 +103,12 @@ void EntityCore::EntityMgrMsg()
 					}
 				case BODYTYPE_BOX:
 					{
-						BoxInfo info;
-						info.orgin = m_Physics.convertToBtVec(msgx->Position);
-						info.friction = newEPD->Friction;
-						info.restitution = newEPD->Restitution;
-						info.mass = newEPD->Mass;
-						info.halfscale = m_Physics.convertToBtVec(newEPD->HalfScale);
-						int pID = m_Physics.createCollision_Box(info);
+						BoxPMat pMat;
+						pMat.friction = newEPD->Friction;
+						pMat.restitution = newEPD->Restitution;
+						pMat.mass = newEPD->Mass;
+						pMat.scalar = newEPD->HalfScale;
+						int pID = m_Physics.createCollision_Box(pMat, msgx->Position);
 						entity->PhysicsID = pID;
 						if(newEPD->PhysicsType == PHYSICSTYPE_KINEMATIC)
 							m_Physics.setAsKinematic(pID);

@@ -5,6 +5,7 @@
 #include "Util.h"
 #include <d3d9.h>
 #include <d3dx9.h>
+#include "PhysicsMat.h"
 //#include <stdio.h>
 
 //Heavily Edited done by - TP
@@ -47,11 +48,11 @@ public:
 
 	void displayCallback();
 
-	//int createCollision_Plane(PMatPlane& mat);
-	int createCollision_Box(BoxInfo& info);//int createCollision_Box(PMatBox& mat);
-	int createCollision_Sphere(SphereInfo& info);//int createCollision_Sphere(PMatSphere& mat);
-	//int createCollision_Capsule(BoxInfo& info);
-	int createCollision_Cylinder(BoxInfo& info);//int createCollision_Cylinder(PMatCylinder& mat);
+	//int createCollision_Plane(PhysicsMat& pMat, D3DXVECTOR3 position);
+	int createCollision_Box(PhysicsMat& pMat, D3DXVECTOR3 position);//int createCollision_Box(PMatBox& mat);
+	int createCollision_Sphere(PhysicsMat& pMat, D3DXVECTOR3 position);//int createCollision_Sphere(PMatSphere& mat);
+	//int createCollision_Capsule(PhysicsMat& pMat, D3DXVECTOR3 position);
+	int createCollision_Cylinder(PhysicsMat& pMat, D3DXVECTOR3 position);//int createCollision_Cylinder(PMatCylinder& mat);
 
 	void deletePhysicsObject(int id);
 
