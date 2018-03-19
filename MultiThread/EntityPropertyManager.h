@@ -7,6 +7,8 @@
 #include "EPhysics.h"
 #include "PhysicsMat.h"
 
+// Modified by TP (to enable PhysicsMats)
+
 struct EntityPropertyData
 {
 	//Graphics
