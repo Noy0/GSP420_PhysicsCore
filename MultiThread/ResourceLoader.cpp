@@ -13,6 +13,8 @@
 #include "CoreManager.h"
 #include "UIList.h"
 
+// Modified by TP (to enable PhysicsMats, and to add new shapes for new physics models)
+
 void ResourceLoader::Load()
 {
 	if(gTextureMgr)
@@ -59,6 +61,8 @@ void ResourceLoader::Load()
 		gStaticMeshMgr->AddItemFromFile(STATICMESH_MEDIUMMARBLE, "Resources/Static Mesh/Marble2.x");
 		gStaticMeshMgr->AddItemFromFile(STATICMESH_LARGEMARBLE, "Resources/Static Mesh/Marble3.x");
 		gStaticMeshMgr->AddItemFromFile(STATICMESH_CYLINDER, "Resources/Static Mesh/Cylinder.x");
+		gStaticMeshMgr->AddItemFromFile(STATICMESH_PLANE, "Resources/Static Mesh/Plane.x");
+		gStaticMeshMgr->AddItemFromFile(STATICMESH_CAPSULE, "Resources/Static Mesh/Capsule.x");
 	}
 	if(gFontMgr)
 	{
@@ -106,93 +110,132 @@ void ResourceLoader::Load()
 	{
 		//Load Entity Properties
 		EntityPropertyData epd;
-		epd.BodyType = COLLIDER_SPHERE;
+		SpherePMat* demoMat = new SpherePMat();
+		demoMat->friction = 0.9;
+		demoMat->restitution = 0.5;
+		demoMat->radius = 0.5;
+		demoMat->scalar = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		demoMat->mass = 10;
+		epd.mat = demoMat;
 		epd.PhysicsType = PHYSICS_DYNAMIC;
-		epd.Friction = 0.9;
-		epd.Restitution = 0.5;
-		epd.Radius = 0.5;
 		epd.GraphicsScale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 		epd.RenderType = SCENE_STATICMESH;
 		epd.GResourceID = STATICMESH_SPHERE1;
-		epd.HalfScale = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
-		epd.Mass = 10;
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_DEMO, new EntityPropertyData(epd));
 		//small marble
-		epd.BodyType = COLLIDER_SPHERE;
-		epd.Friction = 0.9;
-		epd.Restitution = 0.5;
-		epd.Radius = 0.5;
+		SpherePMat* smallMarbleMat = new SpherePMat();
+		smallMarbleMat->friction = 0.9;
+		smallMarbleMat->restitution = 0.5;
+		smallMarbleMat->radius = 0.5;
+		smallMarbleMat->scalar = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		smallMarbleMat->mass = 10;
+		epd.mat = smallMarbleMat;
+		epd.PhysicsType = PHYSICS_DYNAMIC;
 		epd.GraphicsScale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 		epd.RenderType = SCENE_STATICMESH;
 		epd.GResourceID = STATICMESH_SPHERE1;
-		epd.HalfScale = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
-		epd.Mass = 10;
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_SMALLMARBLE, new EntityPropertyData(epd));
 		//Medium Marble
-		epd.BodyType = COLLIDER_SPHERE;
-		epd.Friction = 0.9;
-		epd.Restitution = 0.5;
-		epd.Radius = 0.75;
+		SpherePMat* mediumMarbleMat = new SpherePMat();
+		mediumMarbleMat->friction = 0.9;
+		mediumMarbleMat->restitution = 0.5;
+		mediumMarbleMat->radius = 0.75;
+		mediumMarbleMat->scalar = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		mediumMarbleMat->mass = 20;
+		epd.mat = mediumMarbleMat;
+		epd.PhysicsType = PHYSICS_DYNAMIC;
 		epd.GraphicsScale = D3DXVECTOR3(1.5f, 1.5f, 1.5f);
 		epd.RenderType = SCENE_STATICMESH;
 		epd.GResourceID = STATICMESH_SPHERE2;
-		epd.HalfScale = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
-		epd.Mass = 20;
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_MEDIUMMARBLE, new EntityPropertyData(epd));
 		//Large marble
-		epd.BodyType = COLLIDER_SPHERE;
-		epd.Friction = 0.9;
-		epd.Restitution = 0.5;
-		epd.Radius = 1;
+		SpherePMat* largeMarbleMat = new SpherePMat();
+		largeMarbleMat->friction = 0.9;
+		largeMarbleMat->restitution = 0.5;
+		largeMarbleMat->radius = 1.0;
+		largeMarbleMat->scalar = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		largeMarbleMat->mass = 40;
+		epd.mat = largeMarbleMat;
+		epd.PhysicsType = PHYSICS_DYNAMIC;
 		epd.GraphicsScale = D3DXVECTOR3(2.0f, 2.0f, 2.0f);
 		epd.RenderType = SCENE_STATICMESH;
 		epd.GResourceID = STATICMESH_SPHERE3;
-		epd.HalfScale = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
-		epd.Mass = 40;
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_LARGEMARBLE, new EntityPropertyData(epd));
 		//platform
-		epd.BodyType = COLLIDER_CYLINDER;
-		epd.Friction = 4.0f;
-		epd.Restitution = 0;
-		epd.Radius = 1;
-		epd.GraphicsScale = D3DXVECTOR3(45.0f, 2.0f, 45.0f);
+		CylinderPMat* platformMat = new CylinderPMat();
+		platformMat->friction = 4.0f;
+		platformMat->restitution = 0;
+		platformMat->radius = 1.0;
+		platformMat->length = 1.0;
+		platformMat->scalar = D3DXVECTOR3(20.0f, 1.0f, 20.0f);
+		platformMat->mass = 0;
+		epd.mat = platformMat;
+		epd.PhysicsType = PHYSICS_KINEMATIC;
+		epd.GraphicsScale = D3DXVECTOR3(40.0f, 2.0f, 40.0f);
 		epd.RenderType = SCENE_STATICMESH;
 		epd.GResourceID = STATICMESH_CYLINDER;
-		epd.HalfScale = D3DXVECTOR3(20.0f, 1.0f, 20.0f);
-		epd.Mass = 0;
 		epd.ScriptName = "";
-		epd.PhysicsType = PHYSICS_KINEMATIC;
 		gEPMgr->AddItem(EP_PLATFORM, new EntityPropertyData(epd));
 		//box
-		epd.BodyType = COLLIDER_BOX;
-		epd.Friction = 4.0f;
-		epd.Restitution = 0;
-		epd.Radius = 1;
+		BoxPMat* boxMat = new BoxPMat();
+		boxMat->friction = 4.0f;
+		boxMat->restitution = 0;
+		boxMat->scalar = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+		boxMat->mass = 0;
+		epd.mat = boxMat;
+		epd.PhysicsType = PHYSICS_KINEMATIC;
 		epd.GraphicsScale = D3DXVECTOR3(2.0f, 2.0f, 2.0f);
 		epd.RenderType = SCENE_STATICMESH;
 		epd.GResourceID = STATICMESH_CUBE;
-		epd.HalfScale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
-		epd.Mass = 0;
 		epd.ScriptName = "";
-		epd.PhysicsType = PHYSICS_KINEMATIC;
 		gEPMgr->AddItem(EP_BOX, new EntityPropertyData(epd));
 		//Player Marble		
-		epd.BodyType = COLLIDER_SPHERE;
+		SpherePMat* playerMarbleMat = new SpherePMat();
+		playerMarbleMat->friction = 0.9;
+		playerMarbleMat->restitution = 0.5;
+		playerMarbleMat->radius = 1.0;
+		playerMarbleMat->scalar = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		playerMarbleMat->mass = 80;
+		epd.mat = playerMarbleMat;
 		epd.PhysicsType = PHYSICS_DYNAMIC;
-		epd.Friction = 0.9;
-		epd.Restitution = 0.5;
-		epd.Radius = 1.0;
 		epd.GraphicsScale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 		epd.RenderType = SCENE_STATICMESH;
 		epd.GResourceID = STATICMESH_SPHERE;
-		epd.HalfScale = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
-		epd.Mass = 80;
 		epd.ScriptName = "";
 		gEPMgr->AddItem(EP_PLAYERMARBLE, new EntityPropertyData(epd));
+		//Demo Plane	
+		PlanePMat* demoPlaneMat = new PlanePMat();
+		demoPlaneMat->friction = 0.9;
+		demoPlaneMat->restitution = 0.5;
+		demoPlaneMat->pNormal = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 0.0f);
+		demoPlaneMat->scalar = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		demoPlaneMat->mass = 80;
+		epd.mat = demoPlaneMat;
+		epd.PhysicsType = PHYSICS_KINEMATIC;
+		epd.GraphicsScale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+		epd.RenderType = SCENE_STATICMESH;
+		epd.GResourceID = STATICMESH_PLANE;
+		epd.ScriptName = "";
+		gEPMgr->AddItem(EP_DEMOPLANE, new EntityPropertyData(epd));
+		//Demo Capsule	
+		CapsulePMat* demoCapsuleMat = new CapsulePMat();
+		demoCapsuleMat->friction = 0.9;
+		demoCapsuleMat->restitution = 0.5;
+		demoCapsuleMat->radius = 1.0;
+		demoCapsuleMat->length = 2.0;
+		demoCapsuleMat->scalar = D3DXVECTOR3(0.5f, 0.5f, 0.5f);
+		demoCapsuleMat->mass = 80;
+		epd.mat = demoCapsuleMat;
+		epd.PhysicsType = PHYSICS_DYNAMIC;
+		epd.GraphicsScale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+		epd.RenderType = SCENE_STATICMESH;
+		epd.GResourceID = STATICMESH_CAPSULE;
+		epd.ScriptName = "";
+		gEPMgr->AddItem(EP_DEMOCAPSULE, new EntityPropertyData(epd));
 	}
 
 	if(gSCMgr)

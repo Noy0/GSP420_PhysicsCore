@@ -6,10 +6,11 @@
 #include "EPhysics.h"
 #include <d3dx9.h>
 
+
 struct PhysicsMat
 {
-	PhysicsMat() : inertiaTensor(0, 0, 0), friction(1), restitution(0.0), linearDamping(0),
-		angularDamping(0), mass(1), type(COLLIDER_NULL) {}
+	PhysicsMat() : inertiaTensor(0, 0, 0), scalar(1.0, 1.0, 1.0), friction(1), restitution(0.0), linearDamping(0),
+		angularDamping(0.99), mass(1), type(COLLIDER_NULL) {}
 	TypeCollider type;
 	float mass;
 	float friction;
@@ -17,7 +18,10 @@ struct PhysicsMat
 	float linearDamping;
 	float angularDamping;
 	D3DXVECTOR3 inertiaTensor;
+	D3DXVECTOR3 scalar;//(HALF SCALE) used to deform model
 };
+
+static PhysicsMat defaultMat;
 
 struct PlanePMat :PhysicsMat
 {
@@ -27,29 +31,25 @@ struct PlanePMat :PhysicsMat
 
 struct BoxPMat :PhysicsMat
 {
-	BoxPMat() : PhysicsMat(), scalar(1.0, 1.0, 1.0) { type = COLLIDER_BOX; }
-	D3DXVECTOR3 scalar;
+	BoxPMat() : PhysicsMat() { type = COLLIDER_BOX; }
 };
 
 struct SpherePMat :PhysicsMat
 {
-	SpherePMat() : PhysicsMat(), scalar(1.0, 1.0, 1.0), radius(1) { type = COLLIDER_SPHERE; }
-	D3DXVECTOR3 scalar;//used to deform model - currently not implemented
+	SpherePMat() : PhysicsMat(), radius(1) { type = COLLIDER_SPHERE; }
 	float radius;
 };
 
 struct CapsulePMat :PhysicsMat
 {
-	CapsulePMat() : PhysicsMat(), scalar(1.0, 1.0, 1.0), radius(1), length(1) { type = COLLIDER_CAPSULE; }
-	D3DXVECTOR3 scalar;//used to deform model - currently not implemented
+	CapsulePMat() : PhysicsMat(), radius(1), length(1) { type = COLLIDER_CAPSULE; }
 	float radius;
 	float length;
 };
 
 struct CylinderPMat :PhysicsMat
 {
-	CylinderPMat() : PhysicsMat(), scalar(1.0, 1.0, 1.0), radius(1), length(1) { type = COLLIDER_CYLINDER; }
-	D3DXVECTOR3 scalar;//used to deform model
+	CylinderPMat() : PhysicsMat(), radius(1), length(1) { type = COLLIDER_CYLINDER; }
 	float radius;
 	float length;
 };

@@ -67,84 +67,10 @@ void EntityCore::EntityMgrMsg()
 				p_entity->position = p_msgx->Position;
 
 				//Add object to physics
-				switch(p_newEPD->BodyType)
-				{
-				case COLLIDER_PLANE:
-					{
-						PlanePMat pMat;
-						pMat.friction = p_newEPD->Friction;
-						pMat.restitution = p_newEPD->Restitution;
-						pMat.mass = p_newEPD->Mass;
-						//pMat.pNormal = p_newEPD->;
-						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
-						p_entity->physicsID = pID;
-						if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
-							m_Physics.SetAsKinematic(pID);
-
-						break;
-					}
-				case COLLIDER_BOX:
-					{
-						BoxPMat pMat;
-						pMat.friction = p_newEPD->Friction;
-						pMat.restitution = p_newEPD->Restitution;
-						pMat.mass = p_newEPD->Mass;
-						pMat.scalar = p_newEPD->HalfScale;
-						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
-						p_entity->physicsID = pID;
-						if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
-							m_Physics.SetAsKinematic(pID);
-
-						break;
-					}
-				case COLLIDER_SPHERE:
-					{
-						SpherePMat pMat;
-						pMat.friction = p_newEPD->Friction;
-						pMat.restitution = p_newEPD->Restitution;
-						pMat.mass = p_newEPD->Mass;
-						pMat.angularDamping = p_newEPD->AngularDampen;
-						pMat.radius = p_newEPD->Radius;
-						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
-						p_entity->physicsID = pID;
-						if(p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
-							m_Physics.SetAsKinematic(pID);
-
-						break;
-					}
-				case COLLIDER_CAPSULE:
-					{
-						CapsulePMat pMat;
-						pMat.friction = p_newEPD->Friction;
-						pMat.restitution = p_newEPD->Restitution;
-						pMat.mass = p_newEPD->Mass;
-						pMat.scalar = p_newEPD->HalfScale;
-						//pMat.radius = p_newEPD->;
-						//pMat.length = p_newEPD->;
-						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
-						p_entity->physicsID = pID;
-						if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
-							m_Physics.SetAsKinematic(pID);
-
-						break;
-					}
-				case COLLIDER_CYLINDER:
-					{
-						CylinderPMat pMat;
-						pMat.friction = p_newEPD->Friction;
-						pMat.restitution = p_newEPD->Restitution;
-						pMat.mass = p_newEPD->Mass;
-						pMat.scalar = p_newEPD->HalfScale;
-						//pMat.radius = p_newEPD->;
-						//pMat.length = p_newEPD->;
-						int pID = m_Physics.CreatePhysics_Object(pMat, p_msgx->Position);
-						p_entity->physicsID = pID;
-						if(p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
-							m_Physics.SetAsKinematic(pID);
-
-						break;
-					}
-				}
+				int pID = m_Physics.CreatePhysics_Object(*(p_newEPD->mat), p_msgx->Position);
+				p_entity->physicsID = pID;
+				if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
+					m_Physics.SetAsKinematic(pID);
 
 				delete p_msg;
 				break;
@@ -337,7 +263,7 @@ void EntityCore::Export()
 				//Export picking
 				Pickingtemp.ID.push_back(entityData.ID);
 				Pickingtemp.Position.push_back(entityData.position);
-				Pickingtemp.Halfscale.push_back(gEPMgr->GetItem(entityData.type)->HalfScale);
+				Pickingtemp.Halfscale.push_back(gEPMgr->GetItem(entityData.type)->mat->scalar);
 				break;
 			}
 		}
@@ -377,7 +303,7 @@ void EntityCore::Export()
 		{
 			SteeringObstacles temp;
 			temp.m_iID = entityData.ID;
-			temp.m_dRadius = gEPMgr->GetItem(entityData.type)->HalfScale.x;
+			temp.m_dRadius = gEPMgr->GetItem(entityData.type)->mat->scalar.x;
 			temp.m_dScale = 1;
 			temp.m_dTagged = false;
 			temp.SPosition = SVector3D(entityData.position.x, entityData.position.z);

@@ -5,6 +5,9 @@
 #include <string>
 #include "EScene.h"
 #include "EPhysics.h"
+#include "PhysicsMat.h"
+
+// Modified by TP (to enable PhysicsMats)
 
 struct EntityPropertyData
 {
@@ -15,13 +18,7 @@ struct EntityPropertyData
 
 	//Physics
 	int PhysicsType;
-	int BodyType;
-	float Friction;
-	float Restitution;
-	float Mass;
-	float Radius;
-	float AngularDampen;
-	D3DXVECTOR3 HalfScale;
+	PhysicsMat* mat;
 
 	//AI
 	//AI STATE INFO
@@ -30,12 +27,12 @@ struct EntityPropertyData
 
 	EntityPropertyData()
 	{
+		
 		//Set all types to 0
 		RenderType = 0;
 		GResourceID = 0;
 		PhysicsType = 0;
-		BodyType = 0;
-		AngularDampen = .99;
+		mat = &defaultMat;
 	}
 };
 
