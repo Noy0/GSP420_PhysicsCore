@@ -9,6 +9,112 @@ EntityData::EntityData(): position(0, 0, 0), velocity(0, 0, 0), force(0, 0, 0), 
 
 
 
+//EntityData methods - DN
+PhysicsMat EntityData::getPMaterial()
+{
+	return *mat;
+}
+
+TypePhysics EntityData::getIsKinematic()
+{
+	return isKinematic;
+}
+
+D3DXVECTOR3 EntityData::getPosition()
+{
+	return position;
+}
+
+D3DXVECTOR3 EntityData::getVelocity()
+{
+	return velocity;
+}
+
+D3DXVECTOR3 EntityData::getAcceleration()
+{
+	return (force / mat->mass);
+}
+
+D3DXVECTOR3 EntityData::getMomentum()
+{
+	return (velocity * mat->mass);
+}
+
+D3DXVECTOR3 EntityData::getForce()
+{
+	return force;
+}
+
+D3DXQUATERNION EntityData::getRotation()
+{
+	return rotation;
+}
+
+D3DXQUATERNION EntityData::getAngularSpeed()
+{
+
+}
+
+D3DXQUATERNION EntityData::getAngularAcceleration()
+{
+
+}
+
+D3DXQUATERNION EntityData::getAngularMomentum()
+{
+
+}
+
+D3DXQUATERNION EntityData::getAngularForce()
+{
+
+}
+
+void EntityData::setPhysicsMat(PhysicsMat mat)  //not sure about this one - DN
+{
+	this->mat = &mat;
+}
+
+void EntityData::setIsKinematic(TypePhysics mode)
+{
+	mode = isKinematic;
+}
+
+void EntityData::setPosition(D3DXVECTOR3 position)
+{
+	EntityData().position = position;
+}
+
+void EntityData::setVelocity(D3DXVECTOR3 velocity)
+{
+	EntityData().velocity = velocity;
+}
+
+void EntityData::setForce(D3DXVECTOR3 force)
+{
+	EntityData().force = force;
+}
+
+void EntityData::setRotation(D3DXVECTOR3 rotation)
+{
+	
+}
+
+//void EntityData::setAngularVelocity(D3DXVECTOR3 angularVelocity)
+//{
+//
+//}
+//
+//void EntityData::setAngularForce(D3DXVECTOR3 angularForce)
+//{
+//
+//}
+
+void EntityData::translate(D3DXVECTOR3 translation)
+{
+
+}
+
 
 
 EntityManager::EntityManager()
