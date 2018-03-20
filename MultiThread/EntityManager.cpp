@@ -82,17 +82,17 @@ void EntityData::setIsKinematic(TypePhysics mode)
 
 void EntityData::setPosition(D3DXVECTOR3 position)
 {
-	EntityData().position = position;
+	this->position = position;
 }
 
 void EntityData::setVelocity(D3DXVECTOR3 velocity)
 {
-	EntityData().velocity = velocity;
+	this->velocity = velocity;
 }
 
 void EntityData::setForce(D3DXVECTOR3 force)
 {
-	EntityData().force = force;
+	this->force = force;
 }
 
 void EntityData::setRotation(D3DXVECTOR3 rotation)
