@@ -48,7 +48,7 @@ public:
 	D3DXQUATERNION getAngularAcceleration();
 	D3DXQUATERNION getAngularMomentum();
 	D3DXQUATERNION getAngularForce();
-	void setPhysicsMat(PhysicsMat mat);
+	void setPhysicsMat(PhysicsMat* mat);
 	void setIsKinematic(TypePhysics mode);
 	void setPosition(D3DXVECTOR3 position);
 	void setVelocity(D3DXVECTOR3 velocity);
