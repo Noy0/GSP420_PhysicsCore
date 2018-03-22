@@ -29,6 +29,8 @@ public:
 	D3DXQUATERNION rotation;
 	D3DXVECTOR3 velocity;
 	D3DXVECTOR3 force;
+	D3DXVECTOR3 angularVelocity;
+	D3DXVECTOR3 angularForce;
 	PhysicsMat* mat;
 	TypePhysics isKinematic;
 
@@ -54,7 +56,17 @@ public:
 	void setRotation(D3DXVECTOR3 rotation);
 	void setAngularVelocity(D3DXVECTOR3 angularVelocity);
 	void setAngularForce(D3DXVECTOR3 angularForce);
+
+
 	void translate(D3DXVECTOR3 translation);
+	void accelerate(D3DXVECTOR3 deltaVelocity);
+	void applyImpulseForce(D3DXVECTOR3 deltaMomentum);
+	void applyForce(D3DXVECTOR3 force);
+	void rotate(D3DXQUATERNION rotation);
+	void applySpin(D3DXQUATERNION deltaAngularVelocity);
+	void applyImpulseRotation(D3DXQUATERNION deltaAngularMomentum);
+	void applyRotationalForce(D3DXQUATERNION angularForce);
+
 	//end additions -DN
 
 
