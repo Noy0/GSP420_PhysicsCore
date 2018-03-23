@@ -203,20 +203,12 @@ bool EntityManager::RemoveEntity(int id)
 		{
 			int physicsID = itr->physicsID;
 			itr = entities.erase(itr);
-
-			int highest = physicsID;
-			EntityData* entry = nullptr;
 			for (itr = entities.begin(); itr != entities.end(); ++itr)
 			{
-				if (itr->physicsID > highest)
+				if (itr->physicsID > physicsID)
 				{
-					highest = itr->physicsID;
-					entry = &*itr;
+					--(itr->physicsID);//queqe behavior
 				}
-			}
-			if (entry != nullptr)
-			{
-				entry->physicsID = physicsID;
 			}
 			return true;
 		}

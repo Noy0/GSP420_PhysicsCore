@@ -206,7 +206,8 @@ void EntityCore::EntityMgrMsg()
 				int eID = *(msgx->ID);
 				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
 
-				p_entity->steeringType = msgx->SteeringType;
+				if(p_entity != nullptr)
+					p_entity->steeringType = msgx->SteeringType;
 
 				delete p_msg;
 				break;
