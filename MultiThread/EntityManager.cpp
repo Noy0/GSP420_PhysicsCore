@@ -17,60 +17,52 @@ PhysicsMat EntityData::getPMaterial()
 
 TypePhysics EntityData::getIsKinematic()
 {
-	return this->isKinematic;
+	return isKinematic;
 }
 
 D3DXVECTOR3 EntityData::getPosition()
 {
-	return this->position;
+	return position;
 }
 
 D3DXVECTOR3 EntityData::getVelocity()
 {
-	return this->velocity;
+	return velocity;
 }
 
 D3DXVECTOR3 EntityData::getAcceleration()
 {
-	return (this->force / mat->mass);
+	return (force / mat->mass);
 }
 
 D3DXVECTOR3 EntityData::getMomentum()
 {
-	return (this->velocity * mat->mass);
+	return (velocity * mat->mass);
 }
 
 D3DXVECTOR3 EntityData::getForce()
 {
-	return this->force;
+	return force;
 }
 
 D3DXQUATERNION EntityData::getRotation()
 {
-	return this->rotation;
+	return rotation;
 }
 
-D3DXVECTOR3 EntityData::getAngularSpeed() //did you mean angularVelocity for this?
+D3DXVECTOR3 EntityData::getAngularVelocity()
 {
-	return this->angularVelocity;
+	return angularVelocity;
 }
 
 D3DXVECTOR3 EntityData::getAngularAcceleration()
 {
-	D3DXMATRIX inverseInertiaTensor;
-	D3DXVECTOR3 angAcc;
-	D3DXMatrixInverse(&inverseInertiaTensor, NULL, &mat->inertiaTensor); //need inertiaTensor changed to matrix, also
-																		 //not sure yet about determinant value
-	D3DXVec3TransformCoord(&angAcc, &angularForce, &inverseInertiaTensor);
-	
-	return angAcc;
+	return *D3DXVec3TransformCoord(nullptr, &angularForce, getInvTensorMatrix(mat->inertiaTensor));
 }
 
 D3DXVECTOR3 EntityData::getAngularMomentum()
 {
-	D3DXVECTOR3 angMoment;
-	D3DXVec3TransformCoord(&angMoment, &angularVelocity, &mat->inertiaTensor);//need inertiaTensor changed to matrix
-	return angMoment;
+	return *D3DXVec3TransformCoord(nullptr, &angularVelocity, getTensorMatrix(mat->inertiaTensor));;
 }
 
 D3DXVECTOR3 EntityData::getAngularForce()
@@ -131,7 +123,7 @@ void EntityData::accelerate(D3DXVECTOR3 deltaVelocity)
 
 void EntityData::applyImpulseForce(D3DXVECTOR3 deltaMomentum)
 {
-	this->force += deltaMomentum;  //pretty sure this is wrong
+	this->velocity += deltaMomentum/mat->mass;
 }
 
 void EntityData::applyForce(D3DXVECTOR3 force)
@@ -151,13 +143,31 @@ void EntityData::applySpin(D3DXVECTOR3 deltaAngularVelocity)
 
 void EntityData::applyImpulseRotation(D3DXVECTOR3 deltaAngularMomentum)
 {
-	//?????????????????????
+	this->angularVelocity += *D3DXVec3TransformCoord(nullptr, &angularForce, getInvTensorMatrix(mat->inertiaTensor));
 }
 
 void EntityData::applyRotationalForce(D3DXVECTOR3 angularForce)
 {
 	this->angularForce += angularForce;
 }
+
+
+
+D3DXMATRIX* EntityData::getTensorMatrix(D3DXVECTOR3 inertiaTensor)
+{
+	return new D3DXMATRIX(inertiaTensor.x, 0, 0, 0,
+						  0, inertiaTensor.y, 0, 0,
+						  0, 0, inertiaTensor.z, 0,
+						  0, 0, 0, 0);
+}
+
+D3DXMATRIX* EntityData::getInvTensorMatrix(D3DXVECTOR3 inertiaTensor)
+{
+	return D3DXMatrixInverse(nullptr, NULL, getTensorMatrix(mat->inertiaTensor));//not sure yet about determinant value
+}
+
+
+
 
 
 EntityManager::EntityManager()

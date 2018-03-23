@@ -34,6 +34,9 @@ public:
 	PhysicsMat* mat;
 	TypePhysics isKinematic;
 
+	D3DXMATRIX* getTensorMatrix(D3DXVECTOR3 inertiaTensor);
+	D3DXMATRIX* getInvTensorMatrix(D3DXVECTOR3 inertiaTensor);
+
 public:
 	//methods
 	PhysicsMat getPMaterial();
@@ -44,7 +47,7 @@ public:
 	D3DXVECTOR3 getMomentum();
 	D3DXVECTOR3 getForce();
 	D3DXQUATERNION getRotation();
-	D3DXVECTOR3 getAngularSpeed();
+	D3DXVECTOR3 getAngularVelocity();
 	D3DXVECTOR3 getAngularAcceleration();
 	D3DXVECTOR3 getAngularMomentum();
 	D3DXVECTOR3 getAngularForce();
@@ -69,7 +72,6 @@ public:
 	void applyRotationalForce(D3DXVECTOR3 angularForce);
 
 	//end additions -DN
-
 
 
 	//Graphics attribures
