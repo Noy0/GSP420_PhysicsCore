@@ -44,16 +44,17 @@ public:
 	D3DXVECTOR3 getMomentum();
 	D3DXVECTOR3 getForce();
 	D3DXQUATERNION getRotation();
-	D3DXQUATERNION getAngularSpeed();
-	D3DXQUATERNION getAngularAcceleration();
-	D3DXQUATERNION getAngularMomentum();
-	D3DXQUATERNION getAngularForce();
+	D3DXVECTOR3 getAngularSpeed();
+	D3DXVECTOR3 getAngularAcceleration();
+	D3DXVECTOR3 getAngularMomentum();
+	D3DXVECTOR3 getAngularForce();
+
 	void setPhysicsMat(PhysicsMat* mat);
 	void setIsKinematic(TypePhysics mode);
 	void setPosition(D3DXVECTOR3 position);
 	void setVelocity(D3DXVECTOR3 velocity);
 	void setForce(D3DXVECTOR3 force);
-	void setRotation(D3DXVECTOR3 rotation);
+	void setRotation(D3DXQUATERNION rotation);
 	void setAngularVelocity(D3DXVECTOR3 angularVelocity);
 	void setAngularForce(D3DXVECTOR3 angularForce);
 
@@ -63,9 +64,9 @@ public:
 	void applyImpulseForce(D3DXVECTOR3 deltaMomentum);
 	void applyForce(D3DXVECTOR3 force);
 	void rotate(D3DXQUATERNION rotation);
-	void applySpin(D3DXQUATERNION deltaAngularVelocity);
-	void applyImpulseRotation(D3DXQUATERNION deltaAngularMomentum);
-	void applyRotationalForce(D3DXQUATERNION angularForce);
+	void applySpin(D3DXVECTOR3 deltaAngularVelocity);
+	void applyImpulseRotation(D3DXVECTOR3 deltaAngularMomentum);
+	void applyRotationalForce(D3DXVECTOR3 angularForce);
 
 	//end additions -DN
 

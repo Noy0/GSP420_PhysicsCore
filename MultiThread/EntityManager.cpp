@@ -50,43 +50,28 @@ D3DXQUATERNION EntityData::getRotation()
 	return rotation;
 }
 
-D3DXQUATERNION EntityData::getAngularSpeed()
+D3DXVECTOR3 EntityData::getAngularSpeed()
 {
 	//?
 }
 
-D3DXQUATERNION EntityData::getAngularAcceleration()
+D3DXVECTOR3 EntityData::getAngularAcceleration()
 {
-	D3DXVECTOR3 inertia;
-	D3DXQUATERNION quatInertia; //convert to quat to match return type
-
-	D3DXVec3Cross(&inertia, &angularForce, &mat->inertiaTensor);
-	//turn vec3 into quaternion
-	quatInertia.x = inertia.x;
-	quatInertia.y = inertia.y;
-	quatInertia.z = inertia.z;
-
-	return quatInertia;
+	D3DXVECTOR3 inverseInertiaTensor;
+	D3DXVECTOR3 angAcc;
+	
+	D3DXVec3Cross(&angAcc, &angularForce, &inverseInertiaTensor);
+	return angAcc;
 }
 
-D3DXQUATERNION EntityData::getAngularMomentum()
+D3DXVECTOR3 EntityData::getAngularMomentum()
 {
-	D3DXQUATERNION angularMomentum;
-	D3DXVECTOR3 angMo;
-	//cross product to find angular momentum
-	D3DXVec3Cross(&angMo, &angularVelocity, &mat->inertiaTensor);
-	//convert to quaterion (return type)
-	angularMomentum.x = angMo.x;
-	angularMomentum.y = angMo.y;
-	angularMomentum.z = angMo.z;
 
-	return angularMomentum;
 }
 
-D3DXQUATERNION EntityData::getAngularForce()
+D3DXVECTOR3 EntityData::getAngularForce()
 {
 	return angularForce;
-	
 }
 
 void EntityData::setPhysicsMat(PhysicsMat* mat)  
@@ -114,18 +99,17 @@ void EntityData::setForce(D3DXVECTOR3 force)
 	this->force = force;
 }
 
-void EntityData::setRotation(D3DXVECTOR3 rotation)
+void EntityData::setRotation(D3DXQUATERNION rotation)
 {
 	//passing vector3 parameter rotation to quaternion rotation member variable
-	this->rotation.x = rotation.x;
-	this->rotation.y = rotation.y;
-	this->rotation.z = rotation.z;
+	this->rotation = rotation;
 }
 
 void EntityData::setAngularVelocity(D3DXVECTOR3 angularVelocity)
 {
 	this->angularVelocity = angularVelocity;
 }
+
 void EntityData::setAngularForce(D3DXVECTOR3 angularForce)
 {
 	this->angularForce = angularForce;
@@ -133,7 +117,7 @@ void EntityData::setAngularForce(D3DXVECTOR3 angularForce)
 
 void EntityData::translate(D3DXVECTOR3 translation)
 {
-	position += translation;
+	this->position += translation;
 }
 
 void EntityData::accelerate(D3DXVECTOR3 deltaVelocity)
@@ -158,17 +142,17 @@ void EntityData::rotate(D3DXQUATERNION rotation)
 	this->rotation += rotation;
 }
 
-void EntityData::applySpin(D3DXQUATERNION deltaAngularVelocity)
+void EntityData::applySpin(D3DXVECTOR3 deltaAngularVelocity)
 {
 	//?
 }
 
-void EntityData::applyImpulseRotation(D3DXQUATERNION deltaAngularMomentum)
+void EntityData::applyImpulseRotation(D3DXVECTOR3 deltaAngularMomentum)
 {
 	//?
 }
 
-void EntityData::applyRotationalForce(D3DXQUATERNION angularForce)
+void EntityData::applyRotationalForce(D3DXVECTOR3 angularForce)
 {
 	//?
 }
