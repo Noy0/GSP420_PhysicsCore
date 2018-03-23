@@ -197,11 +197,27 @@ void EntityManager::AddEntity(EntityData& entity)
 
 bool EntityManager::RemoveEntity(int id)
 {
-	for(EntityIterator itr = entities.begin(); itr != entities.end(); ++itr)
+	for (EntityIterator itr = entities.begin(); itr != entities.end(); ++itr)
 	{
-		if(itr->ID == id)
+		if (itr->ID == id)
 		{
+			int physicsID = itr->physicsID;
 			itr = entities.erase(itr);
+
+			int highest = physicsID;
+			EntityData* entry = nullptr;
+			for (itr = entities.begin(); itr != entities.end(); ++itr)
+			{
+				if (itr->physicsID > highest)
+				{
+					highest = itr->physicsID;
+					entry = &*itr;
+				}
+			}
+			if (entry != nullptr)
+			{
+				entry->physicsID = physicsID;
+			}
 			return true;
 		}
 	}

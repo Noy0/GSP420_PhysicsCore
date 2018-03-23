@@ -224,8 +224,10 @@ int PhysicsWorld::CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position)
 void PhysicsWorld::DeletePhysicsObject(int id)
 {
 	/// works like a deque...remove one and they push forward...i think
+	/// TP: NOPE it takes the back most remaining entry and moves it to the vacated position!!!!!!!
 	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
 	p_dynamicsWorld->removeCollisionObject(p_obj);
+	--numOfObjects;
 }
 
 
