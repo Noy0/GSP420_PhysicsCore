@@ -64,7 +64,7 @@ void EntityCore::EntityMgrMsg()
 				EntityData* p_entity = m_EntityMgr.NewEntity();
 				*(p_msgx->ID) = p_entity->ID;
 				p_entity->type = p_msgx->Type;
-				p_entity->position = p_msgx->Position;
+				p_entity->setPosition(p_msgx->Position);
 
 				//Add object to physics
 				int pID = m_Physics.CreatePhysics_Object(*(p_newEPD->mat), p_msgx->Position);
@@ -90,13 +90,55 @@ void EntityCore::EntityMgrMsg()
 				delete p_msg;
 				break;
 			}
+		case MSG_SETPHYSICSMATERIAL:
+			{
+				SMessageSetMaterial* msgx = (SMessageSetMaterial*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->setPhysicsMat(msgx->Mat);
+
+				if (p_entity->physicsID > -1)
+					;// TODO: update physics
+
+				delete p_msg;
+				break;
+			}
+		case MSG_SETISKINEMATIC:
+			{
+				SMessageSetIsKinematic* msgx = (SMessageSetIsKinematic*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->setIsKinematic(msgx->Type);
+
+				if (p_entity->physicsID > -1)
+					;// TODO: update physics
+
+					delete p_msg;
+				break;
+			}
+		case MSG_SETPOSITION:
+			{
+				SMessageSetPosition* msgx = (SMessageSetPosition*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->setPosition(msgx->Position);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetPosition(p_entity->physicsID, msgx->Position);
+
+				delete p_msg;
+				break;
+			}
 		case MSG_SETVELOCITY:
 			{
 				SMessageSetVelocity* msgx = (SMessageSetVelocity*)p_msg;
 				int eID = *(msgx->ID);
 				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
 
-				p_entity->velocity = msgx->Velocity;
+				p_entity->setVelocity(msgx->Velocity);
 
 				if (p_entity->physicsID > -1)
 					m_Physics.SetLinearVelocity(p_entity->physicsID, msgx->Velocity);
@@ -110,32 +152,10 @@ void EntityCore::EntityMgrMsg()
 				int eID = *(msgx->ID);
 				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
 
-				p_entity->force = msgx->Force;
-
-				delete p_msg;
-				break;
-			}
-		case MSG_INCSCRIPTFLAG1:
-			{
-				SMessageIncScriptFlag1* msgx = (SMessageIncScriptFlag1*)p_msg;
-				int eID = msgx->ID;
-				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
-
-				++(p_entity->scriptFlag1);
-
-				delete p_msg;
-				break;
-			}
-		case MSG_SETPOSITION:
-			{
-				SMessageSetPosition* msgx = (SMessageSetPosition*)p_msg;
-				int eID = *(msgx->ID);
-				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
-
-				p_entity->position = msgx->Position;
+				p_entity->setForce(msgx->Force);
 
 				if (p_entity->physicsID > -1)
-					m_Physics.SetPosition(p_entity->physicsID, msgx->Position);
+					m_Physics.SetCentralForce(p_entity->physicsID, msgx->Force);
 
 				delete p_msg;
 				break;
@@ -150,7 +170,134 @@ void EntityCore::EntityMgrMsg()
 					m_Physics.SetRotation(p_entity->physicsID, msgx->Axis, msgx->Degree);
 
 				D3DXQUATERNION Rot = m_Physics.GetRotation(p_entity->physicsID);// WARNING - relies on entity having physics id
-				p_entity->rotation = Rot;
+				p_entity->setRotation(Rot);
+
+				delete p_msg;
+				break;
+			}
+		case MSG_SETROTATION_Q:
+			{
+				SMessageSetRotation_Quat* msgx = (SMessageSetRotation_Quat*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->setRotation(msgx->Rotation);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetRotation(p_entity->physicsID, msgx->Rotation);
+
+				delete p_msg;
+				break;
+			}
+		case MSG_SETANGULARVELOCITY:
+			{
+				SMessageSetAngularVelocity* msgx = (SMessageSetAngularVelocity*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->setAngularVelocity(msgx->AngularVelocity);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetAngularVelocity(p_entity->physicsID, msgx->AngularVelocity);
+
+				delete p_msg;
+				break;
+			}
+		case MSG_SETANGULARFORCE:
+			{
+				SMessageSetAngularForce* msgx = (SMessageSetAngularForce*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->setAngularForce(msgx->AngularForce);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetTorque(p_entity->physicsID, msgx->AngularForce);
+
+				delete p_msg;
+				break;
+			}
+		case MSG_TRANSLATE:
+			{
+				SMessageTranslate* msgx = (SMessageTranslate*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->translate(msgx->DeltaPosition);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetPosition(p_entity->physicsID, p_entity->getPosition());
+
+				delete p_msg;
+				break;
+			}
+		case MSG_ACCELERATE:
+			{
+				SMessageAccelerate* msgx = (SMessageAccelerate*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->accelerate(msgx->DeltaVelocity);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetLinearVelocity(p_entity->physicsID, p_entity->getVelocity());
+
+				delete p_msg;
+				break;
+			}
+		case MSG_IMPULSEFORCE:
+			{
+				SMessageImpulseForce* msgx = (SMessageImpulseForce*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->applyImpulseForce(msgx->DeltaMomentum);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetLinearVelocity(p_entity->physicsID, p_entity->getVelocity());
+
+				delete p_msg;
+				break;
+			}
+		case MSG_ADDFORCE:
+			{
+				SMessageAddForce* msgx = (SMessageAddForce*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->applyForce(msgx->DeltaForce);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.ApplyCentralForce(p_entity->physicsID, msgx->DeltaForce);
+
+				delete p_msg;
+				break;
+			}
+		case MSG_ROTATEONAXIS:
+			{
+				SMessageAddRotationOnAxis* msgx = (SMessageAddRotationOnAxis*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				D3DXQUATERNION dRot; D3DXQuaternionRotationAxis(&dRot, &(msgx->Axis), msgx->Degree);//////////////////////////////////////////////////////////////////////////////////////////
+				p_entity->rotate(dRot);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetRotation(p_entity->physicsID, p_entity->getRotation());
+
+				delete p_msg;
+				break;
+			}
+		case MSG_ROTATE_Q:
+			{
+				SMessageAddRotationQuat* msgx = (SMessageAddRotationQuat*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->rotate(msgx->Rotation);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetRotation(p_entity->physicsID, p_entity->getRotation());
 
 				delete p_msg;
 				break;
@@ -170,7 +317,7 @@ void EntityCore::EntityMgrMsg()
 				delete p_msg;
 				break;
 			}
-			case MSG_ROTATEONY:
+		case MSG_ROTATEONY:
 			{
 				SMessageAddRotationOnY* msgx = (SMessageAddRotationOnY*)p_msg;
 				int eID = *(msgx->ID);
@@ -185,7 +332,7 @@ void EntityCore::EntityMgrMsg()
 				delete p_msg;
 				break;
 			}
-			case MSG_ROTATEONZ:
+		case MSG_ROTATEONZ:
 			{
 				SMessageAddRotationOnZ* msgx = (SMessageAddRotationOnZ*)p_msg;
 				int eID = *(msgx->ID);
@@ -200,7 +347,73 @@ void EntityCore::EntityMgrMsg()
 				delete p_msg;
 				break;
 			}
-			case MSG_SETSTEERING:
+
+		case MSG_ADDANGULARVELOCITY:
+			{
+				SMessageAddAngularVelocity* msgx = (SMessageAddAngularVelocity*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				D3DXVECTOR3 axis; D3DXVec3Normalize(&axis, &(msgx->Axis));
+
+				p_entity->applySpin(axis * msgx->DeltaDegree);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetAngularVelocity(p_entity->physicsID, p_entity->getAngularVelocity());
+
+				delete p_msg;
+				break;
+			}
+		case MSG_IMPULSEANGULARFORCE:
+			{
+				SMessageAddImpulseAngularForce* msgx = (SMessageAddImpulseAngularForce*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				D3DXVECTOR3 axis; D3DXVec3Normalize(&axis, &(msgx->Axis));
+
+				p_entity->applyImpulseRotation(axis * msgx->AngularMomentum);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetAngularVelocity(p_entity->physicsID, p_entity->getAngularVelocity());
+
+				delete p_msg;
+				break;
+			}
+		case MSG_ADDANGULARFORCE:
+			{
+				SMessageAddAngularForce* msgx = (SMessageAddAngularForce*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				D3DXVECTOR3 axis; D3DXVec3Normalize(&axis, &(msgx->Axis));
+				D3DXVECTOR3 torque = axis * msgx->DeltaAngularForce;
+
+				p_entity->applyRotationalForce(torque);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.ApplyTorque(p_entity->physicsID, torque);
+
+				delete p_msg;
+				break;
+			}
+		case MSG_INCSCRIPTFLAG1:
+			{
+				SMessageIncScriptFlag1* msgx = (SMessageIncScriptFlag1*)p_msg;
+				int eID = msgx->ID;
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				++(p_entity->scriptFlag1);
+
+				delete p_msg;
+				break;
+			}
+
+			/*
+			MSG_INCSCRIPTFLAG2,
+			*/
+
+		case MSG_SETSTEERING:
 			{
 				SMessageSetSteering* msgx = (SMessageSetSteering*)p_msg;
 				int eID = *(msgx->ID);
