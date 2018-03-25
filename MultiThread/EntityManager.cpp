@@ -20,6 +20,8 @@ TypePhysics EntityData::getIsKinematic()
 	return isKinematic;
 }
 
+
+
 D3DXVECTOR3 EntityData::getPosition()
 {
 	return position;
@@ -44,6 +46,8 @@ D3DXVECTOR3 EntityData::getForce()
 {
 	return force;
 }
+
+
 
 D3DXQUATERNION EntityData::getRotation()
 {
@@ -70,6 +74,8 @@ D3DXVECTOR3 EntityData::getTorque()
 	return this->torque;
 }
 
+
+
 void EntityData::setPhysicsMat(PhysicsMat* mat)  
 {
 	this->mat = mat;
@@ -79,6 +85,24 @@ void EntityData::setIsKinematic(TypePhysics mode)
 {
 	this->isKinematic = mode;
 }
+
+
+
+void EntityData::setConstraintsLinear(bool x, bool y, bool z)
+{
+	constraintLinear.x = x;
+	constraintLinear.y = y;
+	constraintLinear.z = z;
+}
+
+void EntityData::setConstraintsAngular(bool x, bool y, bool z)
+{
+	constraintAngular.x = x;
+	constraintAngular.y = y;
+	constraintAngular.z = z;
+}
+
+
 
 void EntityData::setPosition(D3DXVECTOR3 position)
 {
@@ -95,6 +119,8 @@ void EntityData::setForce(D3DXVECTOR3 force)
 	this->force = force;
 }
 
+
+
 void EntityData::setRotation(D3DXQUATERNION rotation)
 {
 	this->rotation = rotation;
@@ -109,6 +135,8 @@ void EntityData::setTorque(D3DXVECTOR3 torque)
 {
 	this->torque = torque;
 }
+
+
 
 void EntityData::translate(D3DXVECTOR3 translation)
 {
@@ -130,6 +158,8 @@ void EntityData::applyForce(D3DXVECTOR3 force)
 {
 	this->force += force;
 }
+
+
 
 void EntityData::rotate(D3DXQUATERNION rotation)
 {
@@ -167,7 +197,7 @@ D3DXMATRIX* EntityData::getInvTensorMatrix(D3DXVECTOR3 inertiaTensor)
 }
 
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 EntityManager::EntityManager()

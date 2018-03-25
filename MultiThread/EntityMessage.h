@@ -12,6 +12,8 @@ enum EEntityMessage
 	MSG_REMOVEENTITY,
 	MSG_SETPHYSICSMATERIAL,
 	MSG_SETISKINEMATIC,
+	MSG_SETCONSTRAINTLINEAR,
+	MSG_SETCONSTRAINTANGULAR,
 	MSG_SETPOSITION,
 	MSG_SETVELOCITY,
 	MSG_SETFORCE,
@@ -66,6 +68,22 @@ struct SMessageSetIsKinematic : SMessage
 		ID(id), Type(type) {}
 	int *ID;
 	TypePhysics Type;
+};
+
+struct SMessageSetConstraintLinear : SMessage
+{
+	SMessageSetConstraintLinear(int *id, bool x, bool y, bool z) : SMessage(CORE_ENTITY, MSG_SETCONSTRAINTLINEAR),
+		ID(id), X(x), Y(y), Z(z) {}
+	int *ID;
+	bool X, Y, Z;
+};
+
+struct SMessageSetConstraintAngular : SMessage
+{
+	SMessageSetConstraintAngular(int *id, bool x, bool y, bool z) : SMessage(CORE_ENTITY, MSG_SETCONSTRAINTANGULAR),
+		ID(id), X(x), Y(y), Z(z) {}
+	int *ID;
+	bool X, Y, Z;
 };
 
 struct SMessageSetPosition : public SMessage

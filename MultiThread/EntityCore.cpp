@@ -117,6 +117,34 @@ void EntityCore::EntityMgrMsg()
 				delete p_msg;
 				break;
 			}
+		case MSG_SETCONSTRAINTLINEAR:
+			{
+				SMessageSetConstraintLinear* msgx = (SMessageSetConstraintLinear*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->setConstraintsLinear(msgx->X, msgx->Y, msgx->Z);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetConstraintsLinear(eID, msgx->X, msgx->Y, msgx->Z);
+
+				delete p_msg;
+				break;
+			}
+		case MSG_SETCONSTRAINTANGULAR:
+			{
+				SMessageSetConstraintAngular* msgx = (SMessageSetConstraintAngular*)p_msg;
+				int eID = *(msgx->ID);
+				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
+
+				p_entity->setConstraintsAngular(msgx->X, msgx->Y, msgx->Z);
+
+				if (p_entity->physicsID > -1)
+					m_Physics.SetConstraintsAngular(eID, msgx->X, msgx->Y, msgx->Z);
+
+				delete p_msg;
+				break;
+			}
 		case MSG_SETPOSITION:
 			{
 				SMessageSetPosition* msgx = (SMessageSetPosition*)p_msg;
