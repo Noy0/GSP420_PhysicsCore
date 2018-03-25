@@ -69,8 +69,7 @@ void EntityCore::EntityMgrMsg()
 				//Add object to physics
 				int pID = m_Physics.CreatePhysics_Object(*(p_newEPD->mat), p_msgx->Position);
 				p_entity->physicsID = pID;
-				if (p_newEPD->PhysicsType == PHYSICS_KINEMATIC)
-					m_Physics.SetAsKinematic(pID);
+				m_Physics.SetIsKinematic(pID, (TypePhysics)p_newEPD->PhysicsType);
 
 				delete p_msg;
 				break;
@@ -96,10 +95,10 @@ void EntityCore::EntityMgrMsg()
 				int eID = *(msgx->ID);
 				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
 
-				p_entity->setPhysicsMat(msgx->Mat);
+				p_entity->setPhysicsMat(msgx->P_PMat);
 
 				if (p_entity->physicsID > -1)
-					;// TODO: update physics
+					m_Physics.setPhysicsMat(p_entity->physicsID, *msgx->P_PMat);
 
 				delete p_msg;
 				break;
@@ -113,9 +112,9 @@ void EntityCore::EntityMgrMsg()
 				p_entity->setIsKinematic(msgx->Type);
 
 				if (p_entity->physicsID > -1)
-					;// TODO: update physics
+					m_Physics.SetIsKinematic(eID, msgx->Type);
 
-					delete p_msg;
+				delete p_msg;
 				break;
 			}
 		case MSG_SETPOSITION:

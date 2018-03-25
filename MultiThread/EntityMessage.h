@@ -54,10 +54,10 @@ struct SMessageRemoveEntity : SMessage
 
 struct SMessageSetMaterial : SMessage
 {
-	SMessageSetMaterial(int *id, PhysicsMat* mat) : SMessage(CORE_ENTITY, MSG_SETPHYSICSMATERIAL),
-		ID(id), Mat(mat) {}
+	SMessageSetMaterial(int *id, PhysicsMat* p_PMat) : SMessage(CORE_ENTITY, MSG_SETPHYSICSMATERIAL),
+		ID(id), P_PMat(p_PMat) {}
 	int *ID;
-	PhysicsMat* Mat;
+	PhysicsMat* P_PMat;
 };
 
 struct SMessageSetIsKinematic : SMessage

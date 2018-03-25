@@ -53,7 +53,9 @@ public:
 	void DeletePhysicsObject(int id);
 
 	bool IsKinematic(int id);
-	void SetAsKinematic(int id);
+	void SetIsKinematic(int id, TypePhysics type);
+
+	void setPhysicsMat(int id, const PhysicsMat& mat);
 
 	D3DXVECTOR3 GetPosition(int id);
 	void SetPosition(int id, D3DXVECTOR3& position);
@@ -84,6 +86,8 @@ public:
 	void SetPhysics();
 
 private:
+	btCollisionShape* createCollisionShape(const PhysicsMat& pMat);
+
 	btQuaternion GetBtRotation(int id);
 	void SetBtRotation(int id, btQuaternion& quat);
 };
