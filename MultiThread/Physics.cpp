@@ -224,8 +224,10 @@ int PhysicsWorld::CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position)
 void PhysicsWorld::DeletePhysicsObject(int id)
 {
 	/// works like a deque...remove one and they push forward...i think
+	/// TP: NOPE it takes the back most remaining entry and moves it to the vacated position!!!!!!!
 	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
 	p_dynamicsWorld->removeCollisionObject(p_obj);
+	--numOfObjects;
 }
 
 
@@ -316,6 +318,17 @@ void PhysicsWorld::SetLinearVelocity(int id, D3DXVECTOR3& vel)
 
 
 
+
+void PhysicsWorld::SetCentralForce(int id, D3DXVECTOR3& force)
+{
+	btVector3 btForce = ConvertToBtVec(force);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		p_body->applyCentralForce(btForce - p_body->getTotalForce());
+	}
+}
 
 void PhysicsWorld::ApplyCentralForce(int id, D3DXVECTOR3& force)
 {
@@ -445,6 +458,58 @@ void PhysicsWorld::RotateOnCoordAxis(int id, float degree, AxisID axis)
 	q3 = q2*q1;
 
 	SetBtRotation(id, q3);
+}
+
+
+
+
+
+D3DXVECTOR3 PhysicsWorld::GetAngularVelocity(int id)
+{
+	D3DXVECTOR3 vec;
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		vec = ConvertToDxVec(p_body->getAngularVelocity());
+	}
+	return vec;
+}
+
+void PhysicsWorld::SetAngularVelocity(int id, D3DXVECTOR3& aVel)
+{
+	btVector3 btAVel = ConvertToBtVec(aVel);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		p_body->setAngularVelocity(btAVel);
+	}
+}
+
+
+
+
+void PhysicsWorld::SetTorque(int id, D3DXVECTOR3& torque)
+{
+	btVector3 btTorque = ConvertToBtVec(torque);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		p_body->applyTorque(btTorque - p_body->getTotalTorque());
+	}
+}
+
+void PhysicsWorld::ApplyTorque(int id, D3DXVECTOR3& torque)
+{
+	btVector3 btTorque = ConvertToBtVec(torque);
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+	if (p_body && p_body->getMotionState())
+	{
+		p_body->applyTorque(btTorque);
+	}
 }
 
 

@@ -4,20 +4,75 @@
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <List>
+#include "PhysicsMat.h"
 
 //Heavily Edited done by - TP  (to fix seriously crappy implemntation of a list manager)
 
 struct EntityData
 {
+public:
 	int ID;
+	int physicsID;
 	int type;
 
-	//Physics attribures
+	//deprecated to match UML -DN
+	////Physics attribures
+	//D3DXVECTOR3 position;
+	//D3DXVECTOR3 velocity;
+	//D3DXVECTOR3 force;
+	//D3DXQUATERNION rotation;
+	//end deprecation
+
+//private:
+	//additions made for GSP420 -DN
 	D3DXVECTOR3 position;
 	D3DXVECTOR3 velocity;
 	D3DXVECTOR3 force;
 	D3DXQUATERNION rotation;
-	int physicsID;
+	D3DXVECTOR3 angularVelocity;
+	D3DXVECTOR3 torque;
+	PhysicsMat* mat;
+	TypePhysics isKinematic;
+
+	D3DXMATRIX* getTensorMatrix(D3DXVECTOR3 inertiaTensor);
+	D3DXMATRIX* getInvTensorMatrix(D3DXVECTOR3 inertiaTensor);
+
+public:
+	//methods
+	PhysicsMat getPMaterial();
+	TypePhysics getIsKinematic();
+	D3DXVECTOR3 getPosition();
+	D3DXVECTOR3 getVelocity();
+	D3DXVECTOR3 getAcceleration();
+	D3DXVECTOR3 getMomentum();
+	D3DXVECTOR3 getForce();
+	D3DXQUATERNION getRotation();
+	D3DXVECTOR3 getAngularVelocity();
+	D3DXVECTOR3 getAngularAcceleration();
+	D3DXVECTOR3 getAngularMomentum();
+	D3DXVECTOR3 getTorque();
+
+	void setPhysicsMat(PhysicsMat* mat);
+	void setIsKinematic(TypePhysics mode);
+	void setPosition(D3DXVECTOR3 position);
+	void setVelocity(D3DXVECTOR3 velocity);
+	void setForce(D3DXVECTOR3 force);
+	void setRotation(D3DXQUATERNION rotation);
+	void setAngularVelocity(D3DXVECTOR3 angularVelocity);
+	void setTorque(D3DXVECTOR3 torque);
+
+
+	void translate(D3DXVECTOR3 translation);
+	void accelerate(D3DXVECTOR3 deltaVelocity);
+	void applyImpulseForce(D3DXVECTOR3 deltaMomentum);
+	void applyForce(D3DXVECTOR3 force);
+	void rotate(D3DXQUATERNION rotation);
+	void applyAngularVelocity(D3DXVECTOR3 deltaAngularVelocity);
+	void applyImpulseRotation(D3DXVECTOR3 deltaAngularMomentum);
+	void applyTorque(D3DXVECTOR3 deltaTorque);
+
+	//end additions -DN
+
 
 	//Graphics attribures
 
