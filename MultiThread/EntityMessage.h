@@ -18,7 +18,7 @@ enum EEntityMessage
 	MSG_SETROTATION,
 	MSG_SETROTATION_Q,
 	MSG_SETANGULARVELOCITY,
-	MSG_SETANGULARFORCE,
+	MSG_SETTORQUE,
 	MSG_TRANSLATE,
 	MSG_ACCELERATE,
 	MSG_IMPULSEFORCE,
@@ -29,8 +29,8 @@ enum EEntityMessage
 	MSG_ROTATEONY,
 	MSG_ROTATEONZ,
 	MSG_ADDANGULARVELOCITY,
-	MSG_IMPULSEANGULARFORCE,
-	MSG_ADDANGULARFORCE,
+	MSG_IMPULSETORQUE,
+	MSG_ADDTORQUE,
 	MSG_INCSCRIPTFLAG1,
 	MSG_INCSCRIPTFLAG2,
 	MSG_SETSTEERING
@@ -117,12 +117,12 @@ struct SMessageSetAngularVelocity : public SMessage
 	D3DXVECTOR3 AngularVelocity;
 };
 
-struct SMessageSetAngularForce : public SMessage
+struct SMessageSetTorque : public SMessage
 {
-	SMessageSetAngularForce(int *id, D3DXVECTOR3 angularForce) : SMessage(CORE_ENTITY, MSG_SETANGULARFORCE),
-		ID(id), AngularForce(angularForce) {}
+	SMessageSetTorque(int *id, D3DXVECTOR3 torque) : SMessage(CORE_ENTITY, MSG_SETTORQUE),
+		ID(id), Torque(torque) {}
 	int *ID;
-	D3DXVECTOR3 AngularForce;
+	D3DXVECTOR3 Torque;
 };
 
 struct SMessageTranslate : public SMessage
@@ -207,22 +207,22 @@ struct SMessageAddAngularVelocity : public SMessage
 	float DeltaDegree;
 };
 
-struct SMessageAddImpulseAngularForce : public SMessage
+struct SMessageAddImpulseTorque : public SMessage
 {
-	SMessageAddImpulseAngularForce(int *id, D3DXVECTOR3 axis, float angularMomentum) : SMessage(CORE_ENTITY, MSG_IMPULSEANGULARFORCE),
+	SMessageAddImpulseTorque(int *id, D3DXVECTOR3 axis, float angularMomentum) : SMessage(CORE_ENTITY, MSG_IMPULSETORQUE),
 		ID(id), Axis(axis), AngularMomentum(angularMomentum) {}
 	int *ID;
 	D3DXVECTOR3 Axis;
 	float AngularMomentum;
 };
 
-struct SMessageAddAngularForce : public SMessage
+struct SMessageAddTorque : public SMessage
 {
-	SMessageAddAngularForce(int *id, D3DXVECTOR3 axis, float deltaAngularForce) : SMessage(CORE_ENTITY, MSG_ADDANGULARFORCE),
-		ID(id), Axis(axis), DeltaAngularForce(deltaAngularForce) {}
+	SMessageAddTorque(int *id, D3DXVECTOR3 axis, float deltaTorque) : SMessage(CORE_ENTITY, MSG_ADDTORQUE),
+		ID(id), Axis(axis), DeltaTorque(deltaTorque) {}
 	int *ID;
 	D3DXVECTOR3 Axis;
-	float DeltaAngularForce;
+	float DeltaTorque;
 };
 
 struct SMessageIncScriptFlag1 : public SMessage

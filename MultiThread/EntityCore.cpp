@@ -203,16 +203,16 @@ void EntityCore::EntityMgrMsg()
 				delete p_msg;
 				break;
 			}
-		case MSG_SETANGULARFORCE:
+		case MSG_SETTORQUE:
 			{
-				SMessageSetAngularForce* msgx = (SMessageSetAngularForce*)p_msg;
+				SMessageSetTorque* msgx = (SMessageSetTorque*)p_msg;
 				int eID = *(msgx->ID);
 				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
 
-				p_entity->setAngularForce(msgx->AngularForce);
+				p_entity->setTorque(msgx->Torque);
 
 				if (p_entity->physicsID > -1)
-					m_Physics.SetTorque(p_entity->physicsID, msgx->AngularForce);
+					m_Physics.SetTorque(p_entity->physicsID, msgx->Torque);
 
 				delete p_msg;
 				break;
@@ -356,7 +356,7 @@ void EntityCore::EntityMgrMsg()
 
 				D3DXVECTOR3 axis; D3DXVec3Normalize(&axis, &(msgx->Axis));
 
-				p_entity->applySpin(axis * msgx->DeltaDegree);
+				p_entity->applyAngularVelocity(axis * msgx->DeltaDegree);
 
 				if (p_entity->physicsID > -1)
 					m_Physics.SetAngularVelocity(p_entity->physicsID, p_entity->getAngularVelocity());
@@ -364,9 +364,9 @@ void EntityCore::EntityMgrMsg()
 				delete p_msg;
 				break;
 			}
-		case MSG_IMPULSEANGULARFORCE:
+		case MSG_IMPULSETORQUE:
 			{
-				SMessageAddImpulseAngularForce* msgx = (SMessageAddImpulseAngularForce*)p_msg;
+				SMessageAddImpulseTorque* msgx = (SMessageAddImpulseTorque*)p_msg;
 				int eID = *(msgx->ID);
 				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
 
@@ -380,16 +380,16 @@ void EntityCore::EntityMgrMsg()
 				delete p_msg;
 				break;
 			}
-		case MSG_ADDANGULARFORCE:
+		case MSG_ADDTORQUE:
 			{
-				SMessageAddAngularForce* msgx = (SMessageAddAngularForce*)p_msg;
+				SMessageAddTorque* msgx = (SMessageAddTorque*)p_msg;
 				int eID = *(msgx->ID);
 				EntityData* p_entity = m_EntityMgr.GetEntity(eID);
 
 				D3DXVECTOR3 axis; D3DXVec3Normalize(&axis, &(msgx->Axis));
-				D3DXVECTOR3 torque = axis * msgx->DeltaAngularForce;
+				D3DXVECTOR3 torque = axis * msgx->DeltaTorque;
 
-				p_entity->applyRotationalForce(torque);
+				p_entity->applyTorque(torque);
 
 				if (p_entity->physicsID > -1)
 					m_Physics.ApplyTorque(p_entity->physicsID, torque);

@@ -26,11 +26,11 @@ public:
 //private:
 	//additions made for GSP420 -DN
 	D3DXVECTOR3 position;
-	D3DXQUATERNION rotation;
 	D3DXVECTOR3 velocity;
 	D3DXVECTOR3 force;
+	D3DXQUATERNION rotation;
 	D3DXVECTOR3 angularVelocity;
-	D3DXVECTOR3 angularForce;
+	D3DXVECTOR3 torque;
 	PhysicsMat* mat;
 	TypePhysics isKinematic;
 
@@ -50,7 +50,7 @@ public:
 	D3DXVECTOR3 getAngularVelocity();
 	D3DXVECTOR3 getAngularAcceleration();
 	D3DXVECTOR3 getAngularMomentum();
-	D3DXVECTOR3 getAngularForce();
+	D3DXVECTOR3 getTorque();
 
 	void setPhysicsMat(PhysicsMat* mat);
 	void setIsKinematic(TypePhysics mode);
@@ -59,7 +59,7 @@ public:
 	void setForce(D3DXVECTOR3 force);
 	void setRotation(D3DXQUATERNION rotation);
 	void setAngularVelocity(D3DXVECTOR3 angularVelocity);
-	void setAngularForce(D3DXVECTOR3 angularForce);
+	void setTorque(D3DXVECTOR3 torque);
 
 
 	void translate(D3DXVECTOR3 translation);
@@ -67,9 +67,9 @@ public:
 	void applyImpulseForce(D3DXVECTOR3 deltaMomentum);
 	void applyForce(D3DXVECTOR3 force);
 	void rotate(D3DXQUATERNION rotation);
-	void applySpin(D3DXVECTOR3 deltaAngularVelocity);
+	void applyAngularVelocity(D3DXVECTOR3 deltaAngularVelocity);
 	void applyImpulseRotation(D3DXVECTOR3 deltaAngularMomentum);
-	void applyRotationalForce(D3DXVECTOR3 angularForce);
+	void applyTorque(D3DXVECTOR3 deltaTorque);
 
 	//end additions -DN
 
