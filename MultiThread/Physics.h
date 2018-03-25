@@ -61,12 +61,19 @@ public:
 	D3DXVECTOR3 GetLinearVelocity(int id);
 	void SetLinearVelocity(int id, D3DXVECTOR3& vel);
 
+	void SetCentralForce(int id, D3DXVECTOR3& force);
 	void ApplyCentralForce(int id, D3DXVECTOR3& force);
 	
 	D3DXQUATERNION GetRotation(int id);
 	void SetRotation(int id, D3DXQUATERNION& quat);
 	void SetRotation(int id, D3DXVECTOR3& axis,float degree);
 	void RotateOnCoordAxis(int id, float angle, AxisID axis);
+
+	D3DXVECTOR3 GetAngularVelocity(int id);
+	void SetAngularVelocity(int id, D3DXVECTOR3& aVel);
+
+	void SetTorque(int id, D3DXVECTOR3& torque);
+	void ApplyTorque(int id, D3DXVECTOR3& torque);
 
 	btVector3 ConvertToBtVec(const D3DXVECTOR3& old);
 	D3DXVECTOR3 ConvertToDxVec(const btVector3& old);
