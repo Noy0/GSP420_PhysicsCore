@@ -247,6 +247,7 @@ void PhysicsWorld::setPhysicsMat(int id, const PhysicsMat& pMat)
 				if (p_collisionShapes[i] == p_oldShape)
 				{
 					p_collisionShapes[i] = p_colShape;
+					delete p_oldShape;
 					break;
 				}
 			}
@@ -264,6 +265,31 @@ void PhysicsWorld::setPhysicsMat(int id, const PhysicsMat& pMat)
 		p_body->setDamping(pMat.linearDamping, pMat.angularDamping);
 
 		p_body->setActivationState(DISABLE_DEACTIVATION);
+	}
+}
+
+
+
+
+void PhysicsWorld::SetConstraintsLinear(int id, bool x, bool y, bool z)
+{
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+
+	if (p_body && p_body->getMotionState())
+	{
+		p_body;// TODO: 
+	}
+}
+
+void PhysicsWorld::SetConstraintsAngular(int id, bool x, bool y, bool z)
+{
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+
+	if (p_body && p_body->getMotionState())
+	{
+		p_body;// TODO: 
 	}
 }
 

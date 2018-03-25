@@ -57,6 +57,9 @@ public:
 
 	void setPhysicsMat(int id, const PhysicsMat& mat);
 
+	void SetConstraintsLinear(int id, bool x, bool y, bool z);
+	void SetConstraintsAngular(int id, bool x, bool y, bool z);
+
 	D3DXVECTOR3 GetPosition(int id);
 	void SetPosition(int id, D3DXVECTOR3& position);
 
