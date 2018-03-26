@@ -65,6 +65,8 @@ void EntityCore::EntityMgrMsg()
 				*(p_msgx->ID) = p_entity->ID;
 				p_entity->type = p_msgx->Type;
 				p_entity->setPosition(p_msgx->Position);
+				if(p_newEPD->mat != nullptr)
+					p_entity->setPhysicsMat(p_newEPD->mat);
 
 				//Add object to physics
 				int pID = m_Physics.CreatePhysics_Object(*(p_newEPD->mat), p_msgx->Position);

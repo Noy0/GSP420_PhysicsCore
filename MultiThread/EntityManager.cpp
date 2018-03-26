@@ -5,7 +5,7 @@
 
 
 EntityData::EntityData(): position(0, 0, 0), velocity(0, 0, 0), force(0, 0, 0), rotation(0, 0, 0, 1),
-						  physicsID(-1), steeringType(0), scriptFlag1(0), scriptFlag2(0) {}
+						  physicsID(-1), steeringType(0), scriptFlag1(0), scriptFlag2(0), mat(&defaultMat) {}
 
 
 
