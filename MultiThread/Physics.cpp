@@ -142,50 +142,10 @@ void PhysicsWorld::DisplayCallback()
 
 int PhysicsWorld::CreatePhysics_Object(PhysicsMat& pMat, D3DXVECTOR3 position)
 {
-	btCollisionShape* p_colShape;
-	switch (pMat.type)
-	{
-		case COLLIDER_PLANE:
-		{
-			PlanePMat& plaPMat = (PlanePMat&)pMat;
-			D3DXVECTOR4 normal = plaPMat.pNormal;
-
-			p_colShape = new btStaticPlaneShape(btVector3(normal.x, normal.y, normal.z), normal.w);// TODO figure out how to include non-static version
-			break;
-		}
-		case COLLIDER_BOX:
-		{
-			BoxPMat& boxPMat = (BoxPMat&)pMat;
-			btVector3 size(ConvertToBtVec(boxPMat.scalar));
-
-			p_colShape = new btBoxShape(size);
-			break;
-		}
-		case COLLIDER_SPHERE:
-		{
-			SpherePMat& sphPMat = (SpherePMat&)pMat;
-
-			p_colShape = new btSphereShape(sphPMat.radius);
-			break;
-		}
-		case COLLIDER_CYLINDER:
-		{
-			CylinderPMat& cylPMat = (CylinderPMat&)pMat;
-			btVector3 size(cylPMat.radius * cylPMat.scalar.x, cylPMat.length * cylPMat.scalar.y, cylPMat.radius * cylPMat.scalar.z);
-
-			p_colShape = new btCylinderShape(size);
-			break;
-		}
-		case COLLIDER_CAPSULE:
-		{
-			CapsulePMat& capPMat = (CapsulePMat&)pMat;
-
-			p_colShape = new btCapsuleShape(capPMat.radius, capPMat.length);
-			break;
-		}
-	default:
+	btCollisionShape* p_colShape = createCollisionShape(pMat);
+	if(p_colShape == nullptr)
 		return numOfObjects;
-	}
+	
 	p_collisionShapes.push_back(p_colShape);
 
 	btTransform startTransform;
@@ -241,15 +201,146 @@ bool PhysicsWorld::IsKinematic(int id)
 	return p_body->isKinematicObject();
 }
 
-void PhysicsWorld::SetAsKinematic(int id)
+void PhysicsWorld::SetIsKinematic(int id, TypePhysics type)
 {
 	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
 	btRigidBody* p_body = btRigidBody::upcast(p_obj);
 	if (p_body && p_body->getMotionState())
 	{
-		p_body->setCollisionFlags(p_body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT);
+		switch (type)
+		{
+		case PHYSICS_STATIC:
+			p_body->setCollisionFlags((p_body->getCollisionFlags() | btCollisionObject::CF_STATIC_OBJECT) & ~btCollisionObject::CF_KINEMATIC_OBJECT);
+			break;
+		case PHYSICS_DYNAMIC:
+			p_body->setCollisionFlags(p_body->getCollisionFlags() & ~(btCollisionObject::CF_KINEMATIC_OBJECT | btCollisionObject::CF_STATIC_OBJECT));
+			break;
+		case PHYSICS_KINEMATIC:
+			p_body->setCollisionFlags((p_body->getCollisionFlags() | btCollisionObject::CF_KINEMATIC_OBJECT) & ~btCollisionObject::CF_STATIC_OBJECT);
+			break;
+		default:
+			return;
+		}
 		p_body->setActivationState(DISABLE_DEACTIVATION);
 	}
+}
+
+
+
+
+void PhysicsWorld::setPhysicsMat(int id, const PhysicsMat& pMat)
+{
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+
+	if (p_body && p_body->getMotionState())
+	{
+		btVector3 inertiaTensor = ConvertToBtVec(pMat.inertiaTensor);
+
+		btCollisionShape* p_colShape = createCollisionShape(pMat);
+		if (p_colShape != nullptr)
+		{
+			btCollisionShape* p_oldShape = p_body->getCollisionShape();
+			int size = p_collisionShapes.size();
+			for (int i = 0; i <= size; ++i)
+			{
+				if (p_collisionShapes[i] == p_oldShape)
+				{
+					p_collisionShapes[i] = p_colShape;
+					delete p_oldShape;
+					break;
+				}
+			}
+
+			bool isDynamic = (pMat.mass != 0.f);
+			if (isDynamic)
+				p_colShape->calculateLocalInertia(pMat.mass, inertiaTensor);
+
+			p_body->setCollisionShape(p_colShape);
+		}
+
+		p_body->setMassProps(pMat.mass, inertiaTensor);
+		p_body->setFriction(pMat.friction);
+		p_body->setRestitution(pMat.restitution);
+		p_body->setDamping(pMat.linearDamping, pMat.angularDamping);
+
+		p_body->setActivationState(DISABLE_DEACTIVATION);
+	}
+}
+
+
+
+
+void PhysicsWorld::SetConstraintsLinear(int id, bool x, bool y, bool z)
+{
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+
+	if (p_body && p_body->getMotionState())
+	{
+		p_body;// TODO: 
+	}
+}
+
+void PhysicsWorld::SetConstraintsAngular(int id, bool x, bool y, bool z)
+{
+	btCollisionObject* p_obj = p_dynamicsWorld->getCollisionObjectArray()[id];
+	btRigidBody* p_body = btRigidBody::upcast(p_obj);
+
+	if (p_body && p_body->getMotionState())
+	{
+		p_body;// TODO: 
+	}
+}
+
+
+
+
+btCollisionShape* PhysicsWorld::createCollisionShape(const PhysicsMat& pMat)
+{
+	btCollisionShape* p_colShape = nullptr;
+	switch (pMat.type)
+	{
+	case COLLIDER_PLANE:
+	{
+		PlanePMat& plaPMat = (PlanePMat&)pMat;
+		D3DXVECTOR4 normal = plaPMat.pNormal;
+
+		p_colShape = new btStaticPlaneShape(btVector3(normal.x, normal.y, normal.z), normal.w);// TODO figure out how to include non-static version
+		break;
+	}
+	case COLLIDER_BOX:
+	{
+		BoxPMat& boxPMat = (BoxPMat&)pMat;
+		btVector3 size(ConvertToBtVec(boxPMat.scalar));
+
+		p_colShape = new btBoxShape(size);
+		break;
+	}
+	case COLLIDER_SPHERE:
+	{
+		SpherePMat& sphPMat = (SpherePMat&)pMat;
+
+		p_colShape = new btSphereShape(sphPMat.radius);
+		break;
+	}
+	case COLLIDER_CYLINDER:
+	{
+		CylinderPMat& cylPMat = (CylinderPMat&)pMat;
+		btVector3 size(cylPMat.radius * cylPMat.scalar.x, cylPMat.length * cylPMat.scalar.y, cylPMat.radius * cylPMat.scalar.z);
+
+		p_colShape = new btCylinderShape(size);
+		break;
+	}
+	case COLLIDER_CAPSULE:
+	{
+		CapsulePMat& capPMat = (CapsulePMat&)pMat;
+
+		p_colShape = new btCapsuleShape(capPMat.radius, capPMat.length);
+		break;
+	}
+	}
+	return p_colShape;
 }
 
 
