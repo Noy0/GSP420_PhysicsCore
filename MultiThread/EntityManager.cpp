@@ -61,12 +61,16 @@ D3DXVECTOR3 EntityData::getAngularVelocity()
 
 D3DXVECTOR3 EntityData::getAngularAcceleration()
 {
-	return *D3DXVec3TransformNormal(nullptr, &torque, getInvTensorMatrix(mat->inertiaTensor));
+	D3DXVECTOR3 angularAcceleration;
+	D3DXVec3TransformNormal(&angularAcceleration, &torque, getInvTensorMatrix(mat->inertiaTensor));
+	return angularAcceleration;
 }
 
 D3DXVECTOR3 EntityData::getAngularMomentum()
 {
-	return *D3DXVec3TransformNormal(nullptr, &angularVelocity, getTensorMatrix(mat->inertiaTensor));;
+	D3DXVECTOR3 angularMomentum;
+	D3DXVec3TransformNormal(&angularMomentum, &angularVelocity, getTensorMatrix(mat->inertiaTensor));
+	return angularMomentum;
 }
 
 D3DXVECTOR3 EntityData::getTorque()
@@ -173,7 +177,9 @@ void EntityData::applyAngularVelocity(D3DXVECTOR3 deltaAngularVelocity)
 
 void EntityData::applyImpulseRotation(D3DXVECTOR3 deltaAngularMomentum)
 {
-	this->angularVelocity += *D3DXVec3TransformNormal(nullptr, &torque, getInvTensorMatrix(mat->inertiaTensor));
+	D3DXVECTOR3 deltaAngularVelocity;
+	D3DXVec3TransformNormal(&deltaAngularVelocity, &deltaAngularMomentum, getInvTensorMatrix(mat->inertiaTensor));
+	this->angularVelocity += deltaAngularVelocity;
 }
 
 void EntityData::applyTorque(D3DXVECTOR3 deltaTorque)
@@ -188,12 +194,14 @@ D3DXMATRIX* EntityData::getTensorMatrix(D3DXVECTOR3 inertiaTensor)
 	return new D3DXMATRIX(inertiaTensor.x, 0, 0, 0,
 						  0, inertiaTensor.y, 0, 0,
 						  0, 0, inertiaTensor.z, 0,
-						  0, 0, 0, 0);
+						  0, 0, 0, 1);
 }
 
 D3DXMATRIX* EntityData::getInvTensorMatrix(D3DXVECTOR3 inertiaTensor)
 {
-	return D3DXMatrixInverse(nullptr, NULL, getTensorMatrix(mat->inertiaTensor));//not sure yet about determinant value
+	D3DXMATRIX* result = new D3DXMATRIX();
+	D3DXMatrixInverse(result, NULL, getTensorMatrix(mat->inertiaTensor));
+	return result;
 }
 
 
