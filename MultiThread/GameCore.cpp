@@ -187,6 +187,7 @@ void GameCore::ClickedUI(int id)
 			gCoreMgr->HandleMessage( new SMessageRunScript( "shoot.txt" ) );
 			gCoreMgr->HandleMessage( new SMessageAddEntity( &temp, EP_PLAYERMARBLE, m_CameraPosition ) );
 			gCoreMgr->HandleMessage( new SMessageSetVelocity( &temp, (D3DXVECTOR3(0,0,0) - m_CameraPosition) * 1 ) );
+			gCoreMgr->HandleMessage( new SMessageAddImpulseTorque( &temp, D3DXVECTOR3(0, 0, 1), 0.1f));
 			break;
 		}
 		//For Hosting
